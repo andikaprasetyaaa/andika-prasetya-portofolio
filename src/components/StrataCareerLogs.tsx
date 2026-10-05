@@ -48,10 +48,10 @@ export const StrataCareerLogs: React.FC<StrataCareerLogsProps> = ({ theme }) => 
     },
     {
       period: 'ACADEMIA',
-      role: 'BACHELOR OF COMPUTER SCIENCE (S.Kom)',
-      org: 'Informatics & Distributed Systems • Magna Cum Laude',
+      role: 'BACHELOR OF INFORMATION TECHNOLOGY',
+      org: 'Udayana University',
       depth: 'DEPTH: -120m',
-      status: 'DIPLOMA SECURED',
+      status: 'SECURED',
       statusColor: isNight ? 'text-purple-400 border-purple-800' : 'text-purple-700 border-purple-300',
       icon: GraduationCap,
     },
