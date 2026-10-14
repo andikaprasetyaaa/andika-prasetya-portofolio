@@ -7,114 +7,146 @@ interface ShapeMeshProps {
   shape: 'newspaper' | 'ufc-octagon' | 'fashion-hanger' | 'boxing' | 'discount-tag' | 'shopping-cart' | 'chat-shield' | 'vision-apple';
 }
 
-// 01. Boxing: 3D Heavy Punching Bag & Animated Sparring Glove
+// 01. Boxing: 100% 3D Pro Boxing Glove (Sarung Tinju 3D)
 const BoxingModel: React.FC = () => {
-  const bagRef = useRef<THREE.Group>(null);
-  const gloveRef = useRef<THREE.Group>(null);
+  const gloveGroupRef = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
+    if (!gloveGroupRef.current) return;
     const t = state.clock.elapsedTime;
-    const punchCycle = (t * 2.2) % (Math.PI * 2);
-    // Glove punches forward on peak of cycle
-    const isStrike = Math.sin(punchCycle) > 0.7;
 
-    if (gloveRef.current) {
-      const strikeOffset = isStrike ? Math.sin(punchCycle) * 0.45 : 0;
-      gloveRef.current.position.z = 0.9 - strikeOffset;
-      gloveRef.current.position.x = -0.45 + Math.sin(t * 3) * 0.05;
-      gloveRef.current.position.y = -0.05 + Math.cos(t * 2.5) * 0.04;
-      gloveRef.current.rotation.y = 0.4 + (isStrike ? 0.2 : 0);
-    }
+    // Smooth continuous 3D rotation
+    gloveGroupRef.current.rotation.y += delta * 0.6;
 
-    if (bagRef.current) {
-      bagRef.current.rotation.y += delta * 0.35;
-      // Bag reacts to the strikes
-      const tiltReaction = isStrike ? -0.18 : Math.sin(t * 2) * 0.05;
-      bagRef.current.rotation.x = tiltReaction;
-      bagRef.current.rotation.z = Math.sin(t * 1.8) * 0.06;
-    }
+    // Floating combat stance bobbing & tilting
+    gloveGroupRef.current.rotation.x = Math.sin(t * 2) * 0.12 + 0.1;
+    gloveGroupRef.current.rotation.z = Math.cos(t * 1.8) * 0.08 - 0.15;
+
+    // Periodic jab punch snap forward
+    const punchCycle = (t * 2.5) % (Math.PI * 2);
+    const isJab = Math.sin(punchCycle) > 0.85;
+    const jabZ = isJab ? Math.sin(punchCycle) * 0.35 : 0;
+    gloveGroupRef.current.position.z = jabZ;
   });
 
   return (
-    <group>
-      {/* Heavy Punching Bag */}
-      <group ref={bagRef} position={[0.2, 0, 0]}>
-        {/* Top Mounting Ring & Chains */}
-        <mesh position={[0, 1.35, 0]}>
-          <torusGeometry args={[0.16, 0.025, 8, 16]} />
-          <meshBasicMaterial color="#ffffff" wireframe />
-        </mesh>
-        {/* 3 Chains */}
-        <lineSegments>
-          <bufferGeometry>
-            <bufferAttribute
-              attach="attributes-position"
-              count={6}
-              array={new Float32Array([
-                0, 1.35, 0, -0.35, 0.9, -0.2,
-                0, 1.35, 0, 0.35, 0.9, -0.2,
-                0, 1.35, 0, 0, 0.9, 0.35,
-              ])}
-              itemSize={3}
-            />
-          </bufferGeometry>
-          <lineBasicMaterial color="#8e9192" transparent opacity={0.6} />
-        </lineSegments>
+    <group ref={gloveGroupRef} position={[0, 0, 0]}>
+      {/* --- MAIN PADDED KNUCKLE FIST (Kepala Sarung Tinju) --- */}
+      {/* Outer Knuckle Strike Dome */}
+      <mesh position={[0, 0.35, 0]} scale={[1.25, 1.4, 1.1]}>
+        <sphereGeometry args={[0.55, 24, 20]} />
+        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.85} />
+      </mesh>
 
-        {/* Main Heavy Bag Cylinder */}
-        <mesh position={[0, -0.05, 0]}>
-          <cylinderGeometry args={[0.48, 0.48, 1.7, 16, 4]} />
-          <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.75} />
-        </mesh>
-        {/* Heavy Bag Top Cap */}
-        <mesh position={[0, 0.8, 0]}>
-          <sphereGeometry args={[0.48, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
-          <meshBasicMaterial color="#8e9192" wireframe transparent opacity={0.4} />
-        </mesh>
-        {/* Heavy Bag Bottom Cap */}
-        <mesh position={[0, -0.9, 0]} rotation={[Math.PI, 0, 0]}>
-          <sphereGeometry args={[0.48, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
-          <meshBasicMaterial color="#8e9192" wireframe transparent opacity={0.4} />
-        </mesh>
-        {/* Reinforcement Straps */}
-        <mesh position={[0, 0.4, 0]}>
-          <cylinderGeometry args={[0.49, 0.49, 0.08, 16]} />
-          <meshBasicMaterial color="#ffffff" wireframe />
-        </mesh>
-        <mesh position={[0, -0.45, 0]}>
-          <cylinderGeometry args={[0.49, 0.49, 0.08, 16]} />
-          <meshBasicMaterial color="#ffffff" wireframe />
-        </mesh>
-        {/* Target Strike Zone Crosshair on Bag */}
-        <mesh position={[0, 0.0, 0.5]}>
-          <ringGeometry args={[0.1, 0.15, 16]} />
-          <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} />
-        </mesh>
-      </group>
+      {/* Solid Inner Volume for Depth & Shadow */}
+      <mesh position={[0, 0.35, 0]} scale={[1.2, 1.35, 1.05]}>
+        <sphereGeometry args={[0.52, 16, 16]} />
+        <meshBasicMaterial color="#1a1a1a" transparent opacity={0.65} />
+      </mesh>
 
-      {/* 3D Boxing Sparring Glove */}
-      <group ref={gloveRef} position={[-0.45, -0.05, 0.9]} rotation={[0.1, 0.4, -0.15]}>
-        {/* Glove Main Knuckle Dome / Fist */}
-        <mesh position={[0, 0.1, 0]} scale={[1.15, 1.3, 0.95]}>
-          <sphereGeometry args={[0.26, 12, 12]} />
-          <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.9} />
-        </mesh>
-        {/* Thumb Pad */}
-        <mesh position={[0.22, 0.05, 0.08]} rotation={[0.2, 0.1, -0.6]} scale={[0.8, 1.1, 0.8]}>
-          <sphereGeometry args={[0.12, 8, 8]} />
+      {/* Knuckle Strike Ridge Line / Seam */}
+      <mesh position={[0, 0.82, 0.22]} rotation={[0.45, 0, 0]}>
+        <torusGeometry args={[0.38, 0.025, 8, 24, Math.PI * 0.9]} />
+        <meshBasicMaterial color="#ffffff" />
+      </mesh>
+
+      {/* --- THUMB (Jempol Sarung Tinju dengan Thumb-Lock) --- */}
+      <group position={[-0.52, 0.18, 0.28]} rotation={[0.3, 0.25, -0.65]}>
+        {/* Thumb Padded Capsule */}
+        <mesh scale={[0.85, 1.35, 0.85]}>
+          <sphereGeometry args={[0.24, 16, 16]} />
           <meshBasicMaterial color="#ffffff" wireframe />
         </mesh>
-        {/* Wrist Cuff */}
-        <mesh position={[0, -0.22, 0]}>
-          <cylinderGeometry args={[0.18, 0.2, 0.28, 12, 2]} />
-          <meshBasicMaterial color="#c4c7c8" wireframe transparent opacity={0.7} />
+        {/* Inner Solid Thumb Core */}
+        <mesh scale={[0.8, 1.3, 0.8]}>
+          <sphereGeometry args={[0.22, 12, 12]} />
+          <meshBasicMaterial color="#1f1f1f" />
         </mesh>
-        {/* Wrist Velcro / Lacing Strap */}
-        <mesh position={[0, -0.22, 0]}>
-          <cylinderGeometry args={[0.19, 0.19, 0.08, 12]} />
+        {/* Thumb Lock Safety Strap (Menghubungkan jempol ke kepalan) */}
+        <mesh position={[0.2, 0.08, -0.08]} rotation={[0, 0, 0.75]}>
+          <boxGeometry args={[0.28, 0.07, 0.03]} />
           <meshBasicMaterial color="#ffffff" />
         </mesh>
       </group>
+
+      {/* --- PALM & GRIP BAR (Bagian Telapak & Grip Bar) --- */}
+      {/* Palm Inset Cavity */}
+      <mesh position={[0.05, 0.22, -0.25]} rotation={[0, 0, 0]}>
+        <cylinderGeometry args={[0.38, 0.35, 0.5, 16, 2, true]} />
+        <meshBasicMaterial color="#8e9192" wireframe transparent opacity={0.45} />
+      </mesh>
+
+      {/* Internal Grip Bar (Batang Pegangan Jari) */}
+      <mesh position={[0.05, 0.18, -0.16]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.065, 0.065, 0.55, 12]} />
+        <meshBasicMaterial color="#ffffff" />
+      </mesh>
+
+      {/* Palm Breathable Eyelets (Lubang Sirkulasi Udara) */}
+      {[-0.12, 0, 0.12].map((x, i) => (
+        <mesh key={i} position={[x + 0.05, 0.32, -0.36]}>
+          <circleGeometry args={[0.022, 8]} />
+          <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} />
+        </mesh>
+      ))}
+
+      {/* --- WRIST SUPPORT CUFF (Manset Pergelangan Tangan) --- */}
+      <mesh position={[0, -0.42, 0]}>
+        <cylinderGeometry args={[0.48, 0.55, 0.65, 20, 3, true]} />
+        <meshBasicMaterial color="#c4c7c8" wireframe transparent opacity={0.8} />
+      </mesh>
+
+      {/* Inner Cuff Volume */}
+      <mesh position={[0, -0.42, 0]}>
+        <cylinderGeometry args={[0.46, 0.53, 0.63, 16, 1, true]} />
+        <meshBasicMaterial color="#161616" />
+      </mesh>
+
+      {/* --- WIDE VELCRO STRAP BAND (Tali Perekat Velcro 16-OZ) --- */}
+      <mesh position={[0, -0.4, 0]}>
+        <cylinderGeometry args={[0.52, 0.54, 0.26, 20, 1, true]} />
+        <meshBasicMaterial color="#ffffff" />
+      </mesh>
+
+      {/* Strap Edges / Seams */}
+      <mesh position={[0, -0.27, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.51, 0.018, 8, 24]} />
+        <meshBasicMaterial color="#8e9192" />
+      </mesh>
+      <mesh position={[0, -0.53, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.53, 0.018, 8, 24]} />
+        <meshBasicMaterial color="#8e9192" />
+      </mesh>
+
+      {/* Pro Boxing Glove Brand Patch Label */}
+      <group position={[0, -0.4, 0.53]}>
+        <mesh>
+          <boxGeometry args={[0.5, 0.16, 0.02]} />
+          <meshBasicMaterial color="#0a0a0a" />
+        </mesh>
+        <mesh position={[0, 0, 0.015]}>
+          <boxGeometry args={[0.46, 0.12, 0.01]} />
+          <meshBasicMaterial color="#ffffff" wireframe />
+        </mesh>
+      </group>
+
+      {/* --- WRIST LACING / SEAM ACCENTS --- */}
+      <lineSegments position={[0.02, -0.42, -0.52]}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={8}
+            array={new Float32Array([
+              -0.12, 0.12, 0, 0.12, 0.06, 0,
+              0.12, 0.06, 0, -0.12, 0.0, 0,
+              -0.12, 0.0, 0, 0.12, -0.06, 0,
+              0.12, -0.06, 0, -0.12, -0.12, 0,
+            ])}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <lineBasicMaterial color="#ffffff" linewidth={2} />
+      </lineSegments>
     </group>
   );
 };

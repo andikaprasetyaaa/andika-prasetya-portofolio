@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Github } from 'lucide-react';
 import { ProjectVisualizer3D } from '../three/ProjectVisualizer3D';
 
 const SHAPE_LABELS: Record<string, string> = {
-  boxing: '3D BOXING BAG & GLOVE',
+  boxing: '3D PRO BOXING GLOVE',
   'ufc-octagon': '3D UFC OCTAGON CAGE',
   newspaper: '3D NEWS DOCUMENT SCAN',
   'fashion-hanger': '3D GARMENT & HANGER',
