@@ -1,95 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import { TerrariaHeader } from './components/TerrariaHeader';
-import { StrataSurfaceHero } from './components/StrataSurfaceHero';
-import { StrataTopsoil } from './components/StrataTopsoil';
-import { StrataProjects } from './components/StrataProjects';
-import { StrataTechConduits } from './components/StrataTechConduits';
-import { StrataCareerLogs } from './components/StrataCareerLogs';
-import { StrataObsidianCore } from './components/StrataObsidianCore';
-import { SoundtrackHUD } from './components/SoundtrackHUD';
-import { LateralAltitudeHUD } from './components/LateralAltitudeHUD';
-import { TerrariaFooter } from './components/TerrariaFooter';
-import { BlueprintModal } from './components/BlueprintModal';
-import { Project } from './types';
-import { audioManager } from './utils/audioManager';
+import { initLenis } from './lib/lenis';
+import { CustomCursor } from './components/CustomCursor';
+import { HeaderNav } from './components/HeaderNav';
+import { SlideProgress } from './components/SlideProgress';
+import { LocationStamp } from './components/LocationStamp';
+import { HeroSection } from './sections/HeroSection';
+import { AboutSection } from './sections/AboutSection';
+import { ProjectsSection } from './sections/ProjectsSection';
+import { StackSection } from './sections/StackSection';
+import { TimelineSection } from './sections/TimelineSection';
+import { ContactSection } from './sections/ContactSection';
+import { GlobalStarfield3D } from './three/GlobalStarfield3D';
+
+const SECTION_IDS = ['hero', 'about', 'projects', 'stack', 'timeline', 'contact'];
 
 export const App: React.FC = () => {
-  const [theme, setTheme] = useState<'day' | 'night'>('night');
-  const [currentAltitude, setCurrentAltitude] = useState<string>('+120m');
-  const [activeBlueprint, setActiveBlueprint] = useState<Project | null>(null);
+  const [activeSection, setActiveSection] = useState<string>('hero');
+  const [currentSection, setCurrentSection] = useState<number>(1);
 
+  // Initialize Lenis smooth scroll
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'night') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
-      root.classList.remove('dark');
-      root.classList.add('light');
-    }
-  }, [theme]);
+    const lenis = initLenis();
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
 
-  const handleThemeToggle = () => {
-    const nextTheme = theme === 'day' ? 'night' : 'day';
-    setTheme(nextTheme);
-    audioManager.switchTheme(nextTheme);
-  };
-
+  // Track active section on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPos = window.scrollY + 220;
-      const sections = [
-        { id: 'strata-surface', label: '+120m' },
-        { id: 'strata-topsoil', label: '000m' },
-        { id: 'strata-labs', label: '-140m' },
-        { id: 'strata-conduits', label: '-380m' },
-        { id: 'strata-logs', label: '-720m' },
-        { id: 'strata-core', label: '-1250m' },
-      ];
-
-      let current = '+120m';
-      for (const sec of sections) {
-        const el = document.getElementById(sec.id);
-        if (el && el.offsetTop <= scrollPos) {
-          current = sec.label;
+      const scrollPosition = window.scrollY + window.innerHeight * 0.35;
+      for (let i = SECTION_IDS.length - 1; i >= 0; i--) {
+        const el = document.getElementById(SECTION_IDS[i]);
+        if (el && el.offsetTop <= scrollPosition) {
+          setActiveSection(SECTION_IDS[i]);
+          setCurrentSection(i + 1);
+          break;
         }
       }
-      setCurrentAltitude(current);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <div className={`min-h-screen transition-colors duration-700 ${theme === 'night' ? 'bg-[#0a0a0f] text-slate-100' : 'bg-[#e2e8f0] text-slate-900'}`}>
-      <TerrariaHeader
-        theme={theme}
-        onThemeToggle={handleThemeToggle}
-        currentAltitude={currentAltitude}
-      />
+    <div className="relative min-h-screen bg-[#0a0a0a] text-[#e5e2e1] selection:bg-white selection:text-black">
+      {/* Global Cinematic 3D Starfield Background */}
+      <GlobalStarfield3D />
 
-      <main className="w-full relative pb-16">
-        <StrataSurfaceHero theme={theme} />
-        <StrataTopsoil theme={theme} />
-        <StrataProjects theme={theme} onOpenBlueprint={(p) => setActiveBlueprint(p)} />
-        <StrataTechConduits theme={theme} />
-        <StrataCareerLogs theme={theme} />
-        <StrataObsidianCore theme={theme} onThemeToggle={handleThemeToggle} />
+      {/* Film Grain Texture Overlay */}
+      <div className="film-grain" />
+
+      {/* Custom Spring Blend Cursor */}
+      <CustomCursor />
+
+      {/* Fixed Sticky Header Navigation */}
+      <HeaderNav activeSection={activeSection} />
+
+      {/* Main 6 Sections Flow */}
+      <main className="w-full relative">
+        <HeroSection />
+        <AboutSection />
+        <ProjectsSection />
+        <StackSection />
+        <TimelineSection />
+        <ContactSection />
       </main>
 
-      <SoundtrackHUD theme={theme} onThemeToggle={handleThemeToggle} />
-      <LateralAltitudeHUD theme={theme} currentAltitude={currentAltitude} />
-      <TerrariaFooter theme={theme} />
+      {/* Fixed Right Slide Progress Bar (01 / 06) */}
+      <SlideProgress currentSection={currentSection} />
 
-      <BlueprintModal
-        theme={theme}
-        project={activeBlueprint}
-        onClose={() => setActiveBlueprint(null)}
-      />
+      {/* Fixed Bottom-Left Geo Coordinates & Telemetry */}
+      <LocationStamp />
     </div>
   );
 };
 
 export default App;
-

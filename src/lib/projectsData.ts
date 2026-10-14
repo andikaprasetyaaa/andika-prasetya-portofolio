@@ -1,0 +1,268 @@
+export interface Project {
+  id: string;
+  deploymentId: string;
+  badge: string;
+  badgeType: 'thesis' | 'active' | 'synced' | 'inference' | 'cron' | 'stream';
+  title: string;
+  subtitle: string;
+  category: string;
+  repo: string;
+  githubUrl: string;
+  metricLabel: string;
+  metricValue: string;
+  architectureLabel: string;
+  architectureValue: string;
+  tags: string[];
+  description: string;
+  fullOverview: string;
+  features: string[];
+  specs: {
+    runtime: string;
+    throughput: string;
+    storage: string;
+  };
+  wireframeShape: 'newspaper' | 'ufc-octagon' | 'fashion-hanger' | 'boxing' | 'discount-tag' | 'shopping-cart' | 'chat-shield' | 'vision-apple';
+}
+
+export const PROJECTS: Project[] = [
+  {
+    id: 'summarization',
+    deploymentId: 'IDN-NLG-01',
+    badge: 'UNDERGRAD THESIS',
+    badgeType: 'thesis',
+    title: 'Hybrid Indonesian News Summarization',
+    subtitle: 'Textual Entailment + IndoT5 Synthesis',
+    category: 'AI / NLP',
+    repo: 'leveraging-textual-entailment-for-hybrid-summarization',
+    githubUrl: 'https://github.com/andikaprasetyaaa/leveraging-textual-entailment-for-hybrid-summarization',
+    metricLabel: 'ROUGE-L SCORE',
+    metricValue: '0.442',
+    architectureLabel: 'PIPELINE',
+    architectureValue: 'INDOBERT + INDOT5',
+    tags: ['IndoBERT', 'IndoT5', 'PyTorch', 'Hugging Face', 'NLI'],
+    description: 'Textual entailment (IndoBERT NLI) + IndoT5 undergraduate thesis solving factual hallucinations in low-resource Indonesian news summarization.',
+    fullOverview: 'Developed a novel dual-stage hybrid extractive-abstractive summarization framework. The pipeline uses an IndoBERT model fine-tuned on Natural Language Inference (NLI) to filter out premise-contradicting candidate sentences before feeding the verified subset into IndoT5 for abstractive synthesis, significantly suppressing hallucinated entities.',
+    features: [
+      'Dual-stage hybrid extractive-abstractive pipeline',
+      'IndoBERT fine-tuned for Natural Language Inference (NLI)',
+      'Hallucination filtration prior to abstractive IndoT5 generation',
+      'Benchmarked against standard CNN/DailyMail and Liputan6 datasets',
+    ],
+    specs: {
+      runtime: 'Python 3.10 / PyTorch 2.1',
+      throughput: 'Batch inference with beam search',
+      storage: 'Hugging Face Hub / Weights & Biases',
+    },
+    wireframeShape: 'newspaper',
+  },
+  {
+    id: 'ufc-graphrag',
+    deploymentId: 'UFC-GRAG-02',
+    badge: 'GRAPH ACTIVE',
+    badgeType: 'active',
+    title: 'UFC-GraphRAG',
+    subtitle: 'Knowledge Graph + Vector Augmented Generation',
+    category: 'AI / Graph ML',
+    repo: 'UFC-GraphRAG',
+    githubUrl: 'https://github.com/andikaprasetyaaa/UFC-GraphRAG',
+    metricLabel: 'GRAPH RECALL',
+    metricValue: '98.6%',
+    architectureLabel: 'TOPOLOGY',
+    architectureValue: 'NEO4J + VECTOR DB',
+    tags: ['Python', 'GraphRAG', 'Neo4j', 'LangChain', 'Vector DB'],
+    description: 'Graph + RAG knowledge system for mixed martial arts intelligence, cross-referencing fighter stats, lineages, and matchup histories.',
+    fullOverview: 'Engineered a multi-hop Graph-based Retrieval-Augmented Generation system over UFC historical telemetry. Extracted unstructured fight commentary into Neo4j graph nodes and vector embeddings, enabling natural language questions over complex fighter styles, injury lineages, and predictive matchmaking.',
+    features: [
+      'Knowledge Graph modeling over 3,000+ UFC bouts and fighter entities',
+      'Hybrid semantic vector search + Cypher topological traversal',
+      'Multi-hop question answering across fighter records and training camps',
+      'Structured entity extraction and relation scoring via LangChain',
+    ],
+    specs: {
+      runtime: 'Python 3.11 / Neo4j 5.x',
+      throughput: '< 180ms graph-augmented retrieval',
+      storage: 'Neo4j AuraDB / FAISS Vector Store',
+    },
+    wireframeShape: 'ufc-octagon',
+  },
+  {
+    id: 'fashion-ops',
+    deploymentId: 'OPS-FASHION-03',
+    badge: 'PIPELINE SYNCED',
+    badgeType: 'synced',
+    title: 'Fashion Ops Dashboard',
+    subtitle: 'Manufacturing Telemetry & Operations Pipeline',
+    category: 'Data Engineering',
+    repo: 'fashion-ops-dashboard',
+    githubUrl: 'https://github.com/andikaprasetyaaa/fashion-ops-dashboard',
+    metricLabel: 'PIPELINE SPEED',
+    metricValue: 'REAL-TIME SYNC',
+    architectureLabel: 'STORAGE',
+    architectureValue: 'POSTGRESQL + DOCKER',
+    tags: ['PostgreSQL', 'FastAPI', 'Docker', 'Streamlit', 'PL/pgSQL'],
+    description: 'Operations dashboard and real-time data pipeline for an enterprise fashion manufacturer tracking floor inventory and logistics.',
+    fullOverview: 'Built high-throughput inventory ingestion and supply chain operational analytics with materialized views in PostgreSQL, Dockerized FastAPI microservices, and interactive Streamlit dashboards tracking SKU turnover and factory floor velocity.',
+    features: [
+      'Materialized views and triggers for high-frequency inventory changes',
+      'Microservice architecture containerized with Docker Compose',
+      'Predictive fabric consumption alerts and stockout prevention',
+      'Automated nightly batch reconciliation and telemetry sync',
+    ],
+    specs: {
+      runtime: 'FastAPI / Python 3.11',
+      throughput: '1,500 SKU syncs / second',
+      storage: 'PostgreSQL 16 with TimescaleDB',
+    },
+    wireframeShape: 'fashion-hanger',
+  },
+  {
+    id: 'boxing-coach',
+    deploymentId: 'BOXING-CV-04',
+    badge: 'INFERENCE LIVE',
+    badgeType: 'inference',
+    title: 'Boxing Coach Automation',
+    subtitle: 'Computer Vision Kinematics + LLM Reasoning',
+    category: 'Computer Vision',
+    repo: 'boxing-coach-automation',
+    githubUrl: 'https://github.com/andikaprasetyaaa/boxing-coach-automation',
+    metricLabel: 'DETECTION ACCURACY',
+    metricValue: '99.2%',
+    architectureLabel: 'KINEMATICS',
+    architectureValue: 'MEDIAPIPE + OPENCV',
+    tags: ['Python', 'OpenCV', 'MediaPipe', 'LLM', 'Pose Estimation'],
+    description: 'AI combat sports coach with real-time computer vision biomechanical analysis and automated LLM prompt reasoning for technique critique.',
+    fullOverview: 'Utilizes 33-point skeletal landmark detection via MediaPipe Pose to calculate punching acceleration, guard retention delta, and footwork center-of-gravity, generating automated natural-language coaching critiques with an integrated LLM engine.',
+    features: [
+      '33-point real-time landmark tracking at 60 FPS',
+      'Punch speed (m/s) and angle angular velocity calculation',
+      'Guard lapse detection with visual warning overlays',
+      'Automated personalized workout debrief generated by LLM prompts',
+    ],
+    specs: {
+      runtime: 'OpenCV 4.9 / MediaPipe 0.10',
+      throughput: '60 FPS real-time webcam stream',
+      storage: 'Local SQLite kinematic session logs',
+    },
+    wireframeShape: 'boxing',
+  },
+  {
+    id: 'discount-alert',
+    deploymentId: 'SHOP-CRON-05',
+    badge: 'CRON SCHEDULED',
+    badgeType: 'cron',
+    title: 'Discount Alert Automation',
+    subtitle: 'Shopify Admin GraphQL + Automated Scheduled Sync',
+    category: 'Automation & Cloud',
+    repo: 'discount-alert-automation',
+    githubUrl: 'https://github.com/andikaprasetyaaa/discount-alert-automation',
+    metricLabel: 'EXECUTION CADENCE',
+    metricValue: 'DAILY 06:00 UTC',
+    architectureLabel: 'API TARGET',
+    architectureValue: 'SHOPIFY GRAPHQL',
+    tags: ['Python', 'Shopify GraphQL', 'Google Sheets', 'Scheduled', 'launchd'],
+    description: 'Daily automated email report of Shopify orders applying welcome discounts, cross-checking order validation against Google Sheets.',
+    fullOverview: 'Automated auditing daemon safeguarding ecommerce profit margins. It queries Shopify Admin GraphQL API for newly placed orders, flags duplicate customer identities exploiting welcome discount promo codes across distinct emails, computes coupon burn rates, and dispatches automated morning executive digests.',
+    features: [
+      'Automated GraphQL querying of Shopify Admin Orders API',
+      'Duplicate promo abuse pattern matching across distinct client hashes',
+      'Instant synchronization with Google Sheets audit ledger',
+      'Formatted executive email digests dispatched every morning',
+    ],
+    specs: {
+      runtime: 'Python 3.11 / launchd daemon',
+      throughput: '5,000+ daily orders audited in < 12s',
+      storage: 'Google Sheets API v4 / JSON ledger',
+    },
+    wireframeShape: 'discount-tag',
+  },
+  {
+    id: 'shopify-pulse',
+    deploymentId: 'SHOP-TELEMETRY-06',
+    badge: 'STREAM ACTIVE',
+    badgeType: 'stream',
+    title: 'Shopify Store Pulse',
+    subtitle: 'Real-Time Webhook Pipeline & Store Telemetry',
+    category: 'Data Streaming',
+    repo: 'shopify-store-pulse',
+    githubUrl: 'https://github.com/andikaprasetyaaa/shopify-store-pulse',
+    metricLabel: 'STREAM LATENCY',
+    metricValue: '< 50ms',
+    architectureLabel: 'INGESTION',
+    architectureValue: 'WEBHOOK PIPELINE',
+    tags: ['Python', 'Shopify API', 'Webhooks', 'Data Engineering', 'Redis'],
+    description: 'Real-time automated Shopify store monitoring & telemetry tracking customer conversion spikes, cart abandonments, and webhook events.',
+    fullOverview: 'Event-driven data engineering pipeline consuming high-frequency Shopify webhooks, aggregating store velocity metrics, detecting cart abandonment anomalies, and relaying real-time notifications.',
+    features: [
+      'HMAC-verified webhook ingestion gateway with zero dropped packets',
+      'Real-time cart-to-checkout conversion anomaly detector',
+      'In-memory sliding window aggregation with Redis',
+      'Automated webhook retry queue with exponential backoff',
+    ],
+    specs: {
+      runtime: 'Python 3.11 / Redis 7.2',
+      throughput: 'Up to 3,000 events / minute',
+      storage: 'Redis sliding buffers / SQLite backup',
+    },
+    wireframeShape: 'shopping-cart',
+  },
+  {
+    id: 'indoberttweet-hate-speech',
+    deploymentId: 'NLP-TWEET-07',
+    badge: 'TRANSFORMER NLP',
+    badgeType: 'inference',
+    title: 'IndoBERTweet Hate Speech Classifier',
+    subtitle: 'Contextual Transformer Sentiment & Abusive Filter',
+    category: 'AI / NLP',
+    repo: 'indoberttweet-hate-speech-detection',
+    githubUrl: 'https://github.com/andikaprasetyaaa/indoberttweet-hate-speech-detection',
+    metricLabel: 'F1-SCORE',
+    metricValue: '89.4%',
+    architectureLabel: 'BACKBONE',
+    architectureValue: 'INDOBERTTWEET',
+    tags: ['PyTorch', 'Transformers', 'IndoBERTweet', 'Jupyter', 'NLP'],
+    description: 'Fine-tuned Indonesian BERT transformer model specialized for contextual hate speech classification and abusive content filtering on social feeds.',
+    fullOverview: 'Fine-tuned pretrained IndoBERTweet representations on Indonesian social text corpora to classify abusive expressions and hate speech. Features contextual tokenization, class-imbalance loss reweighting, and low-latency PyTorch inference.',
+    features: [
+      'Pretrained IndoBERTweet transformer fine-tuning pipeline',
+      'Custom subword tokenization optimized for Indonesian slang & abbreviations',
+      'Stratified k-fold cross-validation with weighted focal loss',
+      'Evaluation against baseline BiLSTM and Support Vector Machines',
+    ],
+    specs: {
+      runtime: 'Python 3.10 / PyTorch / Transformers',
+      throughput: '< 25ms per sentence inference',
+      storage: 'Hugging Face Model Hub',
+    },
+    wireframeShape: 'chat-shield',
+  },
+  {
+    id: 'fruits-vegetables-tflite',
+    deploymentId: 'EDGE-VISION-08',
+    badge: 'EDGE AI LIVE',
+    badgeType: 'active',
+    title: 'Edge Vision AI TFLite Recognition',
+    subtitle: 'On-Device Mobile CNN Classifier & Quantization',
+    category: 'Edge AI / Mobile',
+    repo: 'Fruits-Vegetables-TFLite-Recognition',
+    githubUrl: 'https://github.com/andikaprasetyaaa/Fruits-Vegetables-TFLite-Recognition',
+    metricLabel: 'ON-DEVICE ACC',
+    metricValue: '96.8%',
+    architectureLabel: 'INFERENCE',
+    architectureValue: 'TFLITE INT8 QUANT',
+    tags: ['TensorFlow Lite', 'MobileNetV2', 'Edge AI', 'Kotlin', 'CNN'],
+    description: 'Lightweight on-device computer vision classification pipeline optimized via 8-bit post-training quantization for instant mobile edge inference.',
+    fullOverview: 'Engineered an edge computer vision classifier employing transfer learning on MobileNetV2 with post-training INT8 quantization. Converted to flatbuffer format (.tflite) for zero-latency embedded Android mobile deployment with minimal battery drain.',
+    features: [
+      'MobileNetV2 backbone fine-tuned on custom image datasets',
+      'Post-training integer quantization reducing model footprint by 75%',
+      'Sub-30ms on-device CPU/NPU inference on mid-range Android devices',
+      'Integrated into production-ready Android camera preview workflow',
+    ],
+    specs: {
+      runtime: 'TensorFlow 2.15 / TensorFlow Lite',
+      throughput: '35 FPS on mobile CPU/GPU delegate',
+      storage: '< 4.2 MB quantized .tflite flatbuffer',
+    },
+    wireframeShape: 'vision-apple',
+  },
+];

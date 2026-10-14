@@ -7,5 +7,15 @@ export default defineConfig({
     port: 3000,
     open: false,
   },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three', '@react-three/fiber', '@react-three/drei'],
+          motion: ['framer-motion'],
+        },
+      },
+    },
+  },
 });
-

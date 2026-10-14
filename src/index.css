@@ -2,83 +2,115 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-color: #0a0a0a;
+  --surface: #131313;
+  --surface-low: #1c1b1b;
+  --surface-lowest: #0e0e0e;
+  --surface-high: #2a2a2a;
+  --surface-highest: #353534;
+  --primary: #ffffff;
+  --on-primary: #0a0a0a;
+  --text-main: #e5e2e1;
+  --text-muted: #c4c7c8;
+  --outline: #8e9192;
+  --outline-variant: #444748;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
-    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    background-color: #0a0a0a;
+    color: #e5e2e1;
+    font-family: 'Inter', sans-serif;
   }
 
   body {
     margin: 0;
     padding: 0;
-    overscroll-behavior: none;
-    font-family: 'Silkscreen', 'Press Start 2P', monospace;
-    -webkit-font-smoothing: none;
+    background-color: #0a0a0a;
+    color: #e5e2e1;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-smooth: never;
-    text-rendering: optimizeSpeed;
+    overflow-x: hidden;
   }
 
-  /* Force ALL typography to be authentically pixelated */
-  *, *::before, *::after {
-    font-family: 'Silkscreen', 'Press Start 2P', monospace;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: grayscale;
-    font-smooth: never;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.03em;
   }
 
-  /* Classic Retro Arcade/Terraria titles */
-  h1, h2, h3, h4, h5, h6, .font-pixel, .pixel-heading {
-    font-family: 'Press Start 2P', monospace !important;
-    letter-spacing: -0.02em;
-    line-height: 1.4;
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
   }
 
-  /* Body text, descriptions, tags */
-  p, span, a, button, input, textarea, code, pre, .font-body, .font-silkscreen {
-    font-family: 'Silkscreen', 'Pixelify Sans', monospace !important;
-    letter-spacing: 0.03em;
-  }
-
-  /* Custom pixelated image rendering */
-  .pixel-art, img, svg {
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
-  }
-
-  /* Terraria styled scrollbar */
+  /* Custom minimal monochrome scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #0d0d12;
+    background: #0e0e0e;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #386a24;
-    border: 1px solid #58a038;
+    background: #353534;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #58a038;
+    background: #8e9192;
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* Subtle Film Grain Texture Overlay */
+.film-grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.15s ease-out forwards;
+/* Mix Blend Cursor */
+.mix-difference {
+  mix-blend-mode: difference;
 }
 
+/* Marquee track animation */
+@keyframes marqueeLeft {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marqueeRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-marquee-left {
+  animation: marqueeLeft 30s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marqueeRight 30s linear infinite;
+}
+
+.animate-marquee-left:hover,
+.animate-marquee-right:hover {
+  animation-play-state: paused;
+}
+
+/* Hide scrollbar for clean track carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
