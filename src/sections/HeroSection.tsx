@@ -172,13 +172,13 @@ export const HeroSection: React.FC = () => {
 
           {/* Corner Notations */}
           <div className="absolute top-2 left-2 font-mono text-[9px] text-[#8e9192] uppercase tracking-widest z-20 pointer-events-none">
-            [ 3D_VIEWPORT // SPATIAL_MATRIX ]
+            [ 3D_VIEWPORT // ZORO HOLOGRAPHIC MATRIX ]
           </div>
           <div className="absolute top-2 right-2 font-mono text-[9px] text-[#8e9192] tracking-widest z-20 pointer-events-none">
             +48.192.00
           </div>
           <div className="absolute bottom-2 left-2 font-mono text-[9px] text-[#8e9192] uppercase tracking-widest z-20 pointer-events-none">
-            INSPECTOR: ACTIVE
+            SAMURAI PROTOCOL: ACTIVE
           </div>
           <div className="absolute bottom-2 right-2 font-mono text-[9px] text-[#8e9192] tracking-widest z-20 pointer-events-none">
             FPS // 60.0
