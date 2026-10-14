@@ -7,145 +7,148 @@ interface ShapeMeshProps {
   shape: 'newspaper' | 'ufc-octagon' | 'fashion-hanger' | 'boxing' | 'discount-tag' | 'shopping-cart' | 'chat-shield' | 'vision-apple';
 }
 
-// 01. Boxing: 100% 3D Pro Boxing Glove (Sarung Tinju 3D)
+// 01. Boxing: 100% 3D Championship Boxing Ring (Ring Tinju 3D)
 const BoxingModel: React.FC = () => {
-  const gloveGroupRef = useRef<THREE.Group>(null);
+  const ringRef = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
-    if (!gloveGroupRef.current) return;
+    if (!ringRef.current) return;
     const t = state.clock.elapsedTime;
-
     // Smooth continuous 3D rotation
-    gloveGroupRef.current.rotation.y += delta * 0.6;
-
-    // Floating combat stance bobbing & tilting
-    gloveGroupRef.current.rotation.x = Math.sin(t * 2) * 0.12 + 0.1;
-    gloveGroupRef.current.rotation.z = Math.cos(t * 1.8) * 0.08 - 0.15;
-
-    // Periodic jab punch snap forward
-    const punchCycle = (t * 2.5) % (Math.PI * 2);
-    const isJab = Math.sin(punchCycle) > 0.85;
-    const jabZ = isJab ? Math.sin(punchCycle) * 0.35 : 0;
-    gloveGroupRef.current.position.z = jabZ;
+    ringRef.current.rotation.y += delta * 0.45;
+    // Dynamic isometric perspective tilt
+    ringRef.current.rotation.x = Math.sin(t * 1.5) * 0.06 + 0.32;
   });
 
+  const postPositions: [number, number][] = [
+    [-1.0, -1.0], // Corner 1
+    [1.0, 1.0],   // Corner 2
+    [-1.0, 1.0],  // Corner 3
+    [1.0, -1.0],  // Corner 4
+  ];
+
+  // 4 horizontal rope tiers at heights
+  const ropeHeights = [-0.15, 0.08, 0.31, 0.54];
+  const ropeRadius = 0.98;
+
   return (
-    <group ref={gloveGroupRef} position={[0, 0, 0]}>
-      {/* --- MAIN PADDED KNUCKLE FIST (Kepala Sarung Tinju) --- */}
-      {/* Outer Knuckle Strike Dome */}
-      <mesh position={[0, 0.35, 0]} scale={[1.25, 1.4, 1.1]}>
-        <sphereGeometry args={[0.55, 24, 20]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.85} />
+    <group ref={ringRef} position={[0, -0.12, 0]}>
+      {/* --- ELEVATED CANVAS FLOOR & APRON (Panggung Kanvas Ring) --- */}
+      {/* Lower Apron Stage Base */}
+      <mesh position={[0, -0.55, 0]}>
+        <boxGeometry args={[2.3, 0.28, 2.3]} />
+        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.65} />
+      </mesh>
+      {/* Solid Canvas Apron Interior */}
+      <mesh position={[0, -0.55, 0]}>
+        <boxGeometry args={[2.26, 0.26, 2.26]} />
+        <meshBasicMaterial color="#111111" />
       </mesh>
 
-      {/* Solid Inner Volume for Depth & Shadow */}
-      <mesh position={[0, 0.35, 0]} scale={[1.2, 1.35, 1.05]}>
-        <sphereGeometry args={[0.52, 16, 16]} />
-        <meshBasicMaterial color="#1a1a1a" transparent opacity={0.65} />
+      {/* Main Square Canvas Fighting Surface */}
+      <mesh position={[0, -0.4, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[2.0, 2.0]} />
+        <meshBasicMaterial color="#1a1a1a" />
       </mesh>
 
-      {/* Knuckle Strike Ridge Line / Seam */}
-      <mesh position={[0, 0.82, 0.22]} rotation={[0.45, 0, 0]}>
-        <torusGeometry args={[0.38, 0.025, 8, 24, Math.PI * 0.9]} />
-        <meshBasicMaterial color="#ffffff" />
+      {/* Center Circle Ring Decal */}
+      <mesh position={[0, -0.395, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.3, 0.35, 24]} />
+        <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} transparent opacity={0.85} />
       </mesh>
 
-      {/* --- THUMB (Jempol Sarung Tinju dengan Thumb-Lock) --- */}
-      <group position={[-0.52, 0.18, 0.28]} rotation={[0.3, 0.25, -0.65]}>
-        {/* Thumb Padded Capsule */}
-        <mesh scale={[0.85, 1.35, 0.85]}>
-          <sphereGeometry args={[0.24, 16, 16]} />
-          <meshBasicMaterial color="#ffffff" wireframe />
+      {/* Canvas Boundary Line */}
+      <mesh position={[0, -0.395, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.9, 0.94, 4]} />
+        <meshBasicMaterial color="#8e9192" side={THREE.DoubleSide} transparent opacity={0.5} />
+      </mesh>
+
+      {/* --- 4 CORNER POSTS (4 Tiang Sudut) --- */}
+      {postPositions.map(([x, z], i) => (
+        <group key={i} position={[x, 0.1, z]}>
+          {/* Vertical Steel Post */}
+          <mesh position={[0, 0, 0]}>
+            <cylinderGeometry args={[0.04, 0.04, 1.25, 12]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+          {/* Post Top Cap */}
+          <mesh position={[0, 0.65, 0]}>
+            <sphereGeometry args={[0.06, 12, 12]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+          {/* Corner Turnbuckle Protection Pad (Bantalan Sudut) */}
+          <mesh position={[-x * 0.06, 0.18, -z * 0.06]}>
+            <boxGeometry args={[0.13, 0.82, 0.13]} />
+            <meshBasicMaterial
+              color={i === 0 ? '#ffffff' : i === 1 ? '#c4c7c8' : '#8e9192'}
+              wireframe
+            />
+          </mesh>
+        </group>
+      ))}
+
+      {/* --- 4 TIERS OF BOXING ROPES (4 Baris Tali Ring) --- */}
+      {ropeHeights.map((y, tier) => (
+        <group key={tier} position={[0, y, 0]}>
+          {/* North Rope */}
+          <mesh position={[0, 0, -ropeRadius]}>
+            <boxGeometry args={[1.96, 0.024, 0.024]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+          {/* South Rope */}
+          <mesh position={[0, 0, ropeRadius]}>
+            <boxGeometry args={[1.96, 0.024, 0.024]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+          {/* East Rope */}
+          <mesh position={[ropeRadius, 0, 0]}>
+            <boxGeometry args={[0.024, 0.024, 1.96]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+          {/* West Rope */}
+          <mesh position={[-ropeRadius, 0, 0]}>
+            <boxGeometry args={[0.024, 0.024, 1.96]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+        </group>
+      ))}
+
+      {/* --- VERTICAL ROPE SPACERS / TIES (Penahan Vertikal Tali di Setiap Sisi) --- */}
+      {[-ropeRadius, ropeRadius].map((z, i) => (
+        <mesh key={i} position={[0, 0.18, z]}>
+          <boxGeometry args={[0.03, 0.72, 0.03]} />
+          <meshBasicMaterial color="#8e9192" />
         </mesh>
-        {/* Inner Solid Thumb Core */}
-        <mesh scale={[0.8, 1.3, 0.8]}>
-          <sphereGeometry args={[0.22, 12, 12]} />
-          <meshBasicMaterial color="#1f1f1f" />
-        </mesh>
-        {/* Thumb Lock Safety Strap (Menghubungkan jempol ke kepalan) */}
-        <mesh position={[0.2, 0.08, -0.08]} rotation={[0, 0, 0.75]}>
-          <boxGeometry args={[0.28, 0.07, 0.03]} />
-          <meshBasicMaterial color="#ffffff" />
-        </mesh>
-      </group>
-
-      {/* --- PALM & GRIP BAR (Bagian Telapak & Grip Bar) --- */}
-      {/* Palm Inset Cavity */}
-      <mesh position={[0.05, 0.22, -0.25]} rotation={[0, 0, 0]}>
-        <cylinderGeometry args={[0.38, 0.35, 0.5, 16, 2, true]} />
-        <meshBasicMaterial color="#8e9192" wireframe transparent opacity={0.45} />
-      </mesh>
-
-      {/* Internal Grip Bar (Batang Pegangan Jari) */}
-      <mesh position={[0.05, 0.18, -0.16]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.065, 0.065, 0.55, 12]} />
-        <meshBasicMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Palm Breathable Eyelets (Lubang Sirkulasi Udara) */}
-      {[-0.12, 0, 0.12].map((x, i) => (
-        <mesh key={i} position={[x + 0.05, 0.32, -0.36]}>
-          <circleGeometry args={[0.022, 8]} />
-          <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} />
+      ))}
+      {[-ropeRadius, ropeRadius].map((x, i) => (
+        <mesh key={i} position={[x, 0.18, 0]}>
+          <boxGeometry args={[0.03, 0.72, 0.03]} />
+          <meshBasicMaterial color="#8e9192" />
         </mesh>
       ))}
 
-      {/* --- WRIST SUPPORT CUFF (Manset Pergelangan Tangan) --- */}
-      <mesh position={[0, -0.42, 0]}>
-        <cylinderGeometry args={[0.48, 0.55, 0.65, 20, 3, true]} />
-        <meshBasicMaterial color="#c4c7c8" wireframe transparent opacity={0.8} />
-      </mesh>
-
-      {/* Inner Cuff Volume */}
-      <mesh position={[0, -0.42, 0]}>
-        <cylinderGeometry args={[0.46, 0.53, 0.63, 16, 1, true]} />
-        <meshBasicMaterial color="#161616" />
-      </mesh>
-
-      {/* --- WIDE VELCRO STRAP BAND (Tali Perekat Velcro 16-OZ) --- */}
-      <mesh position={[0, -0.4, 0]}>
-        <cylinderGeometry args={[0.52, 0.54, 0.26, 20, 1, true]} />
-        <meshBasicMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Strap Edges / Seams */}
-      <mesh position={[0, -0.27, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.51, 0.018, 8, 24]} />
-        <meshBasicMaterial color="#8e9192" />
-      </mesh>
-      <mesh position={[0, -0.53, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.53, 0.018, 8, 24]} />
-        <meshBasicMaterial color="#8e9192" />
-      </mesh>
-
-      {/* Pro Boxing Glove Brand Patch Label */}
-      <group position={[0, -0.4, 0.53]}>
-        <mesh>
-          <boxGeometry args={[0.5, 0.16, 0.02]} />
-          <meshBasicMaterial color="#0a0a0a" />
-        </mesh>
-        <mesh position={[0, 0, 0.015]}>
-          <boxGeometry args={[0.46, 0.12, 0.01]} />
-          <meshBasicMaterial color="#ffffff" wireframe />
-        </mesh>
-      </group>
-
-      {/* --- WRIST LACING / SEAM ACCENTS --- */}
-      <lineSegments position={[0.02, -0.42, -0.52]}>
+      {/* --- CORNER TURNBUCKLE TENSION SPRINGS (Tali Penegang Sudut) --- */}
+      <lineSegments>
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            count={8}
-            array={new Float32Array([
-              -0.12, 0.12, 0, 0.12, 0.06, 0,
-              0.12, 0.06, 0, -0.12, 0.0, 0,
-              -0.12, 0.0, 0, 0.12, -0.06, 0,
-              0.12, -0.06, 0, -0.12, -0.12, 0,
-            ])}
+            count={16}
+            array={
+              new Float32Array([
+                -1.0, 0.54, -1.0, -0.98, 0.54, -0.98,
+                1.0, 0.54, -1.0, 0.98, 0.54, -0.98,
+                1.0, 0.54, 1.0, 0.98, 0.54, 0.98,
+                -1.0, 0.54, 1.0, -0.98, 0.54, 0.98,
+                -1.0, -0.15, -1.0, -0.98, -0.15, -0.98,
+                1.0, -0.15, -1.0, 0.98, -0.15, -0.98,
+                1.0, -0.15, 1.0, 0.98, -0.15, 0.98,
+                -1.0, -0.15, 1.0, -0.98, -0.15, 0.98,
+              ])
+            }
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#ffffff" linewidth={2} />
+        <lineBasicMaterial color="#8e9192" />
       </lineSegments>
     </group>
   );

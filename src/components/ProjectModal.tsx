@@ -6,7 +6,7 @@ import { soundManager } from './SoundManager';
 import { ProjectVisualizer3D } from '../three/ProjectVisualizer3D';
 
 const SHAPE_LABELS: Record<string, string> = {
-  boxing: '3D PRO BOXING GLOVE',
+  boxing: '3D BOXING RING // 4-ROPE PRO',
   'ufc-octagon': '3D UFC OCTAGON CAGE',
   newspaper: '3D NEWS DOCUMENT SCAN',
   'fashion-hanger': '3D GARMENT & HANGER',
