@@ -1,14 +1,38 @@
-import React, { useRef, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float } from '@react-three/drei';
+import React, { createContext, useContext, useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import type { Project } from '../lib/projectsData';
 
-interface ShapeMeshProps {
-  shape: 'newspaper' | 'ufc-octagon' | 'fashion-hanger' | 'boxing' | 'discount-tag' | 'shopping-cart' | 'chat-shield' | 'vision-apple';
+/**
+ * Procedural hologram models, one per project. Geometry is unchanged from the original
+ * portfolio; colours now come from the active project's accent so each one glows in its own hue.
+ */
+
+export interface HoloPalette {
+  /** Bright accent */
+  main: string;
+  /** Accent blended towards white */
+  soft: string;
+  /** Muted accent for secondary lines */
+  dim: string;
+  /** Dark fill for solid interiors */
+  solid: string;
+}
+
+const HoloContext = createContext<HoloPalette>({ main: '#ff5fa8', soft: '#ffc2dd', dim: '#8a4b7a', solid: '#160c26' });
+export const HoloProvider = HoloContext.Provider;
+const useHolo = () => useContext(HoloContext);
+
+export function makePalette(accent: string): HoloPalette {
+  const main = new THREE.Color(accent);
+  const soft = main.clone().lerp(new THREE.Color('#ffffff'), 0.45);
+  const dim = main.clone().lerp(new THREE.Color('#2a1640'), 0.55);
+  return { main: `#${main.getHexString()}`, soft: `#${soft.getHexString()}`, dim: `#${dim.getHexString()}`, solid: '#160c26' };
 }
 
 // 01. Boxing: 100% 3D Championship Boxing Ring (Ring Tinju 3D)
 const BoxingModel: React.FC = () => {
+  const c = useHolo();
   const ringRef = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
@@ -37,30 +61,30 @@ const BoxingModel: React.FC = () => {
       {/* Lower Apron Stage Base */}
       <mesh position={[0, -0.55, 0]}>
         <boxGeometry args={[2.3, 0.28, 2.3]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.65} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.65} />
       </mesh>
       {/* Solid Canvas Apron Interior */}
       <mesh position={[0, -0.55, 0]}>
         <boxGeometry args={[2.26, 0.26, 2.26]} />
-        <meshBasicMaterial color="#111111" />
+        <meshBasicMaterial color={c.solid} />
       </mesh>
 
       {/* Main Square Canvas Fighting Surface */}
       <mesh position={[0, -0.4, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[2.0, 2.0]} />
-        <meshBasicMaterial color="#1a1a1a" />
+        <meshBasicMaterial color={c.solid} />
       </mesh>
 
       {/* Center Circle Ring Decal */}
       <mesh position={[0, -0.395, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[0.3, 0.35, 24]} />
-        <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} transparent opacity={0.85} />
+        <meshBasicMaterial color={c.main} side={THREE.DoubleSide} transparent opacity={0.85} />
       </mesh>
 
       {/* Canvas Boundary Line */}
       <mesh position={[0, -0.395, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[0.9, 0.94, 4]} />
-        <meshBasicMaterial color="#8e9192" side={THREE.DoubleSide} transparent opacity={0.5} />
+        <meshBasicMaterial color={c.dim} side={THREE.DoubleSide} transparent opacity={0.5} />
       </mesh>
 
       {/* --- 4 CORNER POSTS (4 Tiang Sudut) --- */}
@@ -69,18 +93,18 @@ const BoxingModel: React.FC = () => {
           {/* Vertical Steel Post */}
           <mesh position={[0, 0, 0]}>
             <cylinderGeometry args={[0.04, 0.04, 1.25, 12]} />
-            <meshBasicMaterial color="#ffffff" />
+            <meshBasicMaterial color={c.main} />
           </mesh>
           {/* Post Top Cap */}
           <mesh position={[0, 0.65, 0]}>
             <sphereGeometry args={[0.06, 12, 12]} />
-            <meshBasicMaterial color="#ffffff" />
+            <meshBasicMaterial color={c.main} />
           </mesh>
           {/* Corner Turnbuckle Protection Pad (Bantalan Sudut) */}
           <mesh position={[-x * 0.06, 0.18, -z * 0.06]}>
             <boxGeometry args={[0.13, 0.82, 0.13]} />
             <meshBasicMaterial
-              color={i === 0 ? '#ffffff' : i === 1 ? '#c4c7c8' : '#8e9192'}
+              color={i === 0 ? c.main : i === 1 ? c.soft : c.dim}
               wireframe
             />
           </mesh>
@@ -93,22 +117,22 @@ const BoxingModel: React.FC = () => {
           {/* North Rope */}
           <mesh position={[0, 0, -ropeRadius]}>
             <boxGeometry args={[1.96, 0.024, 0.024]} />
-            <meshBasicMaterial color="#ffffff" />
+            <meshBasicMaterial color={c.main} />
           </mesh>
           {/* South Rope */}
           <mesh position={[0, 0, ropeRadius]}>
             <boxGeometry args={[1.96, 0.024, 0.024]} />
-            <meshBasicMaterial color="#ffffff" />
+            <meshBasicMaterial color={c.main} />
           </mesh>
           {/* East Rope */}
           <mesh position={[ropeRadius, 0, 0]}>
             <boxGeometry args={[0.024, 0.024, 1.96]} />
-            <meshBasicMaterial color="#ffffff" />
+            <meshBasicMaterial color={c.main} />
           </mesh>
           {/* West Rope */}
           <mesh position={[-ropeRadius, 0, 0]}>
             <boxGeometry args={[0.024, 0.024, 1.96]} />
-            <meshBasicMaterial color="#ffffff" />
+            <meshBasicMaterial color={c.main} />
           </mesh>
         </group>
       ))}
@@ -117,13 +141,13 @@ const BoxingModel: React.FC = () => {
       {[-ropeRadius, ropeRadius].map((z, i) => (
         <mesh key={i} position={[0, 0.18, z]}>
           <boxGeometry args={[0.03, 0.72, 0.03]} />
-          <meshBasicMaterial color="#8e9192" />
+          <meshBasicMaterial color={c.dim} />
         </mesh>
       ))}
       {[-ropeRadius, ropeRadius].map((x, i) => (
         <mesh key={i} position={[x, 0.18, 0]}>
           <boxGeometry args={[0.03, 0.72, 0.03]} />
-          <meshBasicMaterial color="#8e9192" />
+          <meshBasicMaterial color={c.dim} />
         </mesh>
       ))}
 
@@ -148,7 +172,7 @@ const BoxingModel: React.FC = () => {
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#8e9192" />
+        <lineBasicMaterial color={c.dim} />
       </lineSegments>
     </group>
   );
@@ -156,6 +180,7 @@ const BoxingModel: React.FC = () => {
 
 // 02. UFC-GraphRAG: 3D Octagon Cage with Graph Nodes Inside
 const UfcOctagonModel: React.FC = () => {
+  const c = useHolo();
   const groupRef = useRef<THREE.Group>(null);
   const graphRef = useRef<THREE.Group>(null);
 
@@ -177,38 +202,38 @@ const UfcOctagonModel: React.FC = () => {
       {/* Octagon Canvas Floor */}
       <mesh position={[0, -0.65, 0]} rotation={[0, Math.PI / 8, 0]}>
         <cylinderGeometry args={[1.35, 1.35, 0.08, 8]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.8} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.8} />
       </mesh>
 
       {/* 8 Corner Posts */}
       {posts.map(([x, z], i) => (
         <mesh key={i} position={[x, 0, z]}>
           <cylinderGeometry args={[0.04, 0.04, 1.3, 8]} />
-          <meshBasicMaterial color="#ffffff" />
+          <meshBasicMaterial color={c.main} />
         </mesh>
       ))}
 
       {/* Octagonal Wireframe Fence Cage */}
       <mesh position={[0, 0, 0]} rotation={[0, Math.PI / 8, 0]}>
         <cylinderGeometry args={[1.35, 1.35, 1.3, 8, 6, true]} />
-        <meshBasicMaterial color="#c4c7c8" wireframe transparent opacity={0.45} />
+        <meshBasicMaterial color={c.soft} wireframe transparent opacity={0.45} />
       </mesh>
 
       {/* Top Rail Padding */}
       <mesh position={[0, 0.65, 0]} rotation={[0, Math.PI / 8, 0]}>
         <cylinderGeometry args={[1.38, 1.38, 0.06, 8, 1, true]} />
-        <meshBasicMaterial color="#ffffff" wireframe />
+        <meshBasicMaterial color={c.main} wireframe />
       </mesh>
 
       {/* Floating Graph Nodes Inside Octagon */}
       <group ref={graphRef} position={[0, 0.1, 0]}>
         <mesh>
           <octahedronGeometry args={[0.5, 0]} />
-          <meshBasicMaterial color="#ffffff" wireframe />
+          <meshBasicMaterial color={c.main} wireframe />
         </mesh>
         <points>
           <sphereGeometry args={[0.7, 8, 8]} />
-          <pointsMaterial color="#ffffff" size={0.08} />
+          <pointsMaterial color={c.main} size={0.08} />
         </points>
       </group>
     </group>
@@ -217,6 +242,7 @@ const UfcOctagonModel: React.FC = () => {
 
 // 03. News Summarization: 3D Newspaper / Open Document with AI Scan Line
 const NewspaperModel: React.FC = () => {
+  const c = useHolo();
   const groupRef = useRef<THREE.Group>(null);
   const scanRef = useRef<THREE.Mesh>(null);
 
@@ -235,19 +261,19 @@ const NewspaperModel: React.FC = () => {
       {/* Left Page */}
       <mesh position={[-0.55, 0, 0.08]} rotation={[0, 0.18, 0]}>
         <boxGeometry args={[0.9, 1.4, 0.03]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.7} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.7} />
       </mesh>
 
       {/* Right Page */}
       <mesh position={[0.55, 0, 0.08]} rotation={[0, -0.18, 0]}>
         <boxGeometry args={[0.9, 1.4, 0.03]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.7} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.7} />
       </mesh>
 
       {/* Spine / Crease */}
       <mesh position={[0, 0, 0]}>
         <cylinderGeometry args={[0.04, 0.04, 1.42, 8]} />
-        <meshBasicMaterial color="#ffffff" />
+        <meshBasicMaterial color={c.main} />
       </mesh>
 
       {/* Text Lines Representation */}
@@ -255,11 +281,11 @@ const NewspaperModel: React.FC = () => {
         <group key={i}>
           <mesh position={[-0.55, y, 0.1]}>
             <boxGeometry args={[0.6, 0.03, 0.01]} />
-            <meshBasicMaterial color="#8e9192" transparent opacity={0.5} />
+            <meshBasicMaterial color={c.dim} transparent opacity={0.5} />
           </mesh>
           <mesh position={[0.55, y, 0.1]}>
             <boxGeometry args={[0.6, 0.03, 0.01]} />
-            <meshBasicMaterial color="#8e9192" transparent opacity={0.5} />
+            <meshBasicMaterial color={c.dim} transparent opacity={0.5} />
           </mesh>
         </group>
       ))}
@@ -267,7 +293,7 @@ const NewspaperModel: React.FC = () => {
       {/* Laser AI Summarization Scan Line */}
       <mesh ref={scanRef} position={[0, 0, 0.14]}>
         <boxGeometry args={[1.9, 0.04, 0.02]} />
-        <meshBasicMaterial color="#ffffff" />
+        <meshBasicMaterial color={c.main} />
       </mesh>
     </group>
   );
@@ -275,6 +301,7 @@ const NewspaperModel: React.FC = () => {
 
 // 04. Fashion Ops: 3D Clothes Hanger & Garment
 const FashionHangerModel: React.FC = () => {
+  const c = useHolo();
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
@@ -287,7 +314,7 @@ const FashionHangerModel: React.FC = () => {
       {/* Top Hook */}
       <mesh position={[0, 0.95, 0]}>
         <torusGeometry args={[0.2, 0.03, 8, 16, Math.PI * 1.3]} />
-        <meshBasicMaterial color="#ffffff" wireframe />
+        <meshBasicMaterial color={c.main} wireframe />
       </mesh>
 
       {/* Hanger Triangle Frame */}
@@ -304,23 +331,23 @@ const FashionHangerModel: React.FC = () => {
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#ffffff" linewidth={2} />
+        <lineBasicMaterial color={c.main} linewidth={2} />
       </lineSegments>
 
       {/* Stylized Hanging Garment / Shirt Body */}
       <mesh position={[0, -0.2, 0]}>
         <cylinderGeometry args={[0.7, 0.9, 1.1, 12, 3, true]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.65} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.65} />
       </mesh>
 
       {/* Sleeves */}
       <mesh position={[-0.8, 0.1, 0]} rotation={[0, 0, 0.6]}>
         <cylinderGeometry args={[0.25, 0.3, 0.5, 8, 1, true]} />
-        <meshBasicMaterial color="#8e9192" wireframe transparent opacity={0.5} />
+        <meshBasicMaterial color={c.dim} wireframe transparent opacity={0.5} />
       </mesh>
       <mesh position={[0.8, 0.1, 0]} rotation={[0, 0, -0.6]}>
         <cylinderGeometry args={[0.25, 0.3, 0.5, 8, 1, true]} />
-        <meshBasicMaterial color="#8e9192" wireframe transparent opacity={0.5} />
+        <meshBasicMaterial color={c.dim} wireframe transparent opacity={0.5} />
       </mesh>
     </group>
   );
@@ -328,6 +355,7 @@ const FashionHangerModel: React.FC = () => {
 
 // 05. Discount Alert: 3D Retail Price Tag with "%" Symbol
 const DiscountTagModel: React.FC = () => {
+  const c = useHolo();
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
@@ -341,25 +369,25 @@ const DiscountTagModel: React.FC = () => {
       {/* Hanging Loop / String */}
       <mesh position={[0, 1.05, 0]}>
         <torusGeometry args={[0.22, 0.02, 8, 16]} />
-        <meshBasicMaterial color="#8e9192" wireframe />
+        <meshBasicMaterial color={c.dim} wireframe />
       </mesh>
 
       {/* Main Tag Body */}
       <mesh position={[0, 0.0, 0]}>
         <boxGeometry args={[1.1, 1.6, 0.06]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.7} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.7} />
       </mesh>
 
       {/* Clipped Top Corners Wireframe */}
       <mesh position={[0, 0.8, 0]}>
         <coneGeometry args={[0.55, 0.35, 4]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.5} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.5} />
       </mesh>
 
       {/* Tag Eyelet Hole */}
       <mesh position={[0, 0.65, 0.04]}>
         <ringGeometry args={[0.07, 0.12, 16]} />
-        <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} />
+        <meshBasicMaterial color={c.main} side={THREE.DoubleSide} />
       </mesh>
 
       {/* Big "%" Percent Discount Glyph in 3D */}
@@ -367,17 +395,17 @@ const DiscountTagModel: React.FC = () => {
         {/* Slash */}
         <mesh rotation={[0, 0, 0.65]}>
           <boxGeometry args={[0.8, 0.08, 0.04]} />
-          <meshBasicMaterial color="#ffffff" />
+          <meshBasicMaterial color={c.main} />
         </mesh>
         {/* Top-Left Circle */}
         <mesh position={[-0.22, 0.22, 0]}>
           <torusGeometry args={[0.12, 0.04, 8, 16]} />
-          <meshBasicMaterial color="#ffffff" />
+          <meshBasicMaterial color={c.main} />
         </mesh>
         {/* Bottom-Right Circle */}
         <mesh position={[0.22, -0.22, 0]}>
           <torusGeometry args={[0.12, 0.04, 8, 16]} />
-          <meshBasicMaterial color="#ffffff" />
+          <meshBasicMaterial color={c.main} />
         </mesh>
       </group>
     </group>
@@ -386,6 +414,7 @@ const DiscountTagModel: React.FC = () => {
 
 // 06. Shopify Store Pulse: 3D Shopping Cart with Pulsing Core
 const ShoppingCartModel: React.FC = () => {
+  const c = useHolo();
   const groupRef = useRef<THREE.Group>(null);
   const pulseRef = useRef<THREE.Mesh>(null);
 
@@ -402,7 +431,7 @@ const ShoppingCartModel: React.FC = () => {
       {/* Basket Grid Body */}
       <mesh position={[0, 0.2, 0]}>
         <boxGeometry args={[1.3, 0.9, 0.9]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.7} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.7} />
       </mesh>
 
       {/* Push Handle */}
@@ -418,17 +447,17 @@ const ShoppingCartModel: React.FC = () => {
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#ffffff" />
+        <lineBasicMaterial color={c.main} />
       </lineSegments>
       <mesh position={[-0.95, 0.85, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.04, 0.04, 0.95, 8]} />
-        <meshBasicMaterial color="#ffffff" />
+        <meshBasicMaterial color={c.main} />
       </mesh>
 
       {/* Cart Lower Wheel Chassis */}
       <mesh position={[-0.1, -0.4, 0]}>
         <boxGeometry args={[1.0, 0.1, 0.7]} />
-        <meshBasicMaterial color="#8e9192" wireframe />
+        <meshBasicMaterial color={c.dim} wireframe />
       </mesh>
 
       {/* 4 Wheels */}
@@ -440,14 +469,14 @@ const ShoppingCartModel: React.FC = () => {
       ].map(([x, y, z], i) => (
         <mesh key={i} position={[x, y, z]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.12, 0.12, 0.08, 12]} />
-          <meshBasicMaterial color="#ffffff" wireframe />
+          <meshBasicMaterial color={c.main} wireframe />
         </mesh>
       ))}
 
       {/* Pulsing Telemetry Heartbeat Core inside basket */}
       <mesh ref={pulseRef} position={[0, 0.2, 0]}>
         <dodecahedronGeometry args={[0.35, 0]} />
-        <meshBasicMaterial color="#ffffff" wireframe />
+        <meshBasicMaterial color={c.main} wireframe />
       </mesh>
     </group>
   );
@@ -455,6 +484,7 @@ const ShoppingCartModel: React.FC = () => {
 
 // 07. IndoBERTweet: 3D Speech/Tweet Bubble & Security Shield
 const ChatShieldModel: React.FC = () => {
+  const c = useHolo();
   const groupRef = useRef<THREE.Group>(null);
   const shieldRef = useRef<THREE.Mesh>(null);
 
@@ -468,7 +498,7 @@ const ChatShieldModel: React.FC = () => {
       {/* Speech Bubble Main Box */}
       <mesh position={[0, 0.2, 0]}>
         <boxGeometry args={[1.5, 1.1, 0.5]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.65} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.65} />
       </mesh>
 
       {/* Speech Bubble Corner Tail */}
@@ -485,19 +515,19 @@ const ChatShieldModel: React.FC = () => {
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#ffffff" />
+        <lineBasicMaterial color={c.main} />
       </lineSegments>
 
       {/* Security Filter Shield */}
       <mesh ref={shieldRef} position={[0, 0.2, 0.35]}>
         <octahedronGeometry args={[0.45, 0]} />
-        <meshBasicMaterial color="#ffffff" wireframe />
+        <meshBasicMaterial color={c.main} wireframe />
       </mesh>
 
       {/* Filter Checkmark in Shield */}
       <mesh position={[0, 0.2, 0.6]}>
         <ringGeometry args={[0.1, 0.16, 16]} />
-        <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} />
+        <meshBasicMaterial color={c.main} side={THREE.DoubleSide} />
       </mesh>
     </group>
   );
@@ -505,6 +535,7 @@ const ChatShieldModel: React.FC = () => {
 
 // 08. Edge Vision AI: 3D Fruit (Apple) with AI Bounding Box & Reticle
 const VisionAppleModel: React.FC = () => {
+  const c = useHolo();
   const groupRef = useRef<THREE.Group>(null);
   const boxRef = useRef<THREE.Group>(null);
 
@@ -522,60 +553,56 @@ const VisionAppleModel: React.FC = () => {
       {/* Apple Body */}
       <mesh position={[0, 0, 0]}>
         <sphereGeometry args={[0.7, 16, 16]} />
-        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.65} />
+        <meshBasicMaterial color={c.main} wireframe transparent opacity={0.65} />
       </mesh>
 
       {/* Stem */}
       <mesh position={[0, 0.75, 0]} rotation={[0, 0, 0.2]}>
         <cylinderGeometry args={[0.03, 0.03, 0.35, 8]} />
-        <meshBasicMaterial color="#ffffff" />
+        <meshBasicMaterial color={c.main} />
       </mesh>
 
       {/* Leaf */}
       <mesh position={[0.18, 0.8, 0]} rotation={[0, 0, -0.8]}>
         <boxGeometry args={[0.25, 0.1, 0.02]} />
-        <meshBasicMaterial color="#8e9192" wireframe />
+        <meshBasicMaterial color={c.dim} wireframe />
       </mesh>
 
       {/* AI Computer Vision Bounding Box with Corner Brackets */}
       <group ref={boxRef}>
         <mesh position={[0, 0.05, 0]}>
           <boxGeometry args={[1.7, 1.7, 1.7]} />
-          <meshBasicMaterial color="#c4c7c8" wireframe transparent opacity={0.35} />
+          <meshBasicMaterial color={c.soft} wireframe transparent opacity={0.35} />
         </mesh>
         {/* Detection Confidence Reticle / Tag */}
         <mesh position={[0, 0.95, 0.86]}>
           <boxGeometry args={[0.6, 0.12, 0.02]} />
-          <meshBasicMaterial color="#ffffff" />
+          <meshBasicMaterial color={c.main} />
         </mesh>
       </group>
     </group>
   );
 };
 
-export const ProjectVisualizer3D: React.FC<{
-  shape: 'newspaper' | 'ufc-octagon' | 'fashion-hanger' | 'boxing' | 'discount-tag' | 'shopping-cart' | 'chat-shield' | 'vision-apple';
-  className?: string;
-}> = ({ shape, className = 'w-full h-full' }) => {
-  return (
-    <div className={`relative ${className} select-none pointer-events-none`}>
-      <Canvas
-        camera={{ position: [0, 0, 4.0], fov: 42 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true }}
-      >
-        <ambientLight intensity={0.9} />
-        <Float speed={1.8} rotationIntensity={0.5} floatIntensity={0.4}>
-          {shape === 'boxing' && <BoxingModel />}
-          {shape === 'ufc-octagon' && <UfcOctagonModel />}
-          {shape === 'newspaper' && <NewspaperModel />}
-          {shape === 'fashion-hanger' && <FashionHangerModel />}
-          {shape === 'discount-tag' && <DiscountTagModel />}
-          {shape === 'shopping-cart' && <ShoppingCartModel />}
-          {shape === 'chat-shield' && <ChatShieldModel />}
-          {shape === 'vision-apple' && <VisionAppleModel />}
-        </Float>
-      </Canvas>
-    </div>
-  );
+export const HoloModel: React.FC<{ shape: Project['wireframeShape'] }> = ({ shape }) => {
+  switch (shape) {
+    case 'boxing':
+      return <BoxingModel />;
+    case 'ufc-octagon':
+      return <UfcOctagonModel />;
+    case 'newspaper':
+      return <NewspaperModel />;
+    case 'fashion-hanger':
+      return <FashionHangerModel />;
+    case 'discount-tag':
+      return <DiscountTagModel />;
+    case 'shopping-cart':
+      return <ShoppingCartModel />;
+    case 'chat-shield':
+      return <ChatShieldModel />;
+    case 'vision-apple':
+      return <VisionAppleModel />;
+    default:
+      return null;
+  }
 };
