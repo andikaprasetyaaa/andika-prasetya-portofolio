@@ -115,11 +115,13 @@ export const MissionModal: React.FC<Props> = ({ project, onClose }) => {
             {/* Body */}
             <div data-lenis-prevent className="overflow-y-auto overscroll-contain">
               <div className="grid grid-cols-1 gap-7 p-5 sm:p-8 lg:grid-cols-12 lg:gap-10">
-                {/* Left: 3D hologram + specs */}
+                {/* Left: 3D Vice Sunset Diorama + specs */}
                 <div className="flex flex-col gap-4 lg:col-span-5">
                   <div
                     className="relative h-64 overflow-hidden rounded-2xl border border-white/[0.08] sm:h-72"
-                    style={{ background: `radial-gradient(80% 70% at 50% 100%, ${accent}26, transparent 70%), #0a0614` }}
+                    style={{
+                      background: `radial-gradient(85% 75% at 50% 44%, rgba(255, 138, 92, 0.24), ${accent}22 48%, rgba(16, 8, 32, 0.94) 100%), linear-gradient(180deg, #1b0d38 0%, #35144a 52%, #130824 100%)`,
+                    }}
                   >
                     <Suspense fallback={null}>
                       <HoloViewer shape={project.wireframeShape} accent={accent} interactive className="h-full w-full" />

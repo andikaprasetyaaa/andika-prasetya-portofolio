@@ -6,146 +6,164 @@ import type { Project } from '../lib/projectsData';
 import { useReducedMotionPref } from '../lib/settings';
 import { HoloModel, HoloProvider, makePalette } from './HoloModels';
 
-function displayColor(hex: string) {
-  const c = new THREE.Color(hex);
-  c.convertLinearToSRGB();
-  return new THREE.Vector3(c.r, c.g, c.b);
-}
+/* ---------------- GTA VI Synthwave Slatted Sunset Sun + Twin 3D Palm Trees + Neon Plinth ---------------- */
 
-/* ---------------- projector pad: rings, light cone, rising motes ---------------- */
-
-const beamVertex = /* glsl */ `
+const sunVertex = /* glsl */ `
 varying vec2 vUv;
 void main() {
   vUv = uv;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `;
-const beamFragment = /* glsl */ `
-uniform vec3 uColor;
-varying vec2 vUv;
-void main() {
-  float a = pow(1.0 - vUv.y, 2.4) * 0.20;
-  gl_FragColor = vec4(uColor * a, 1.0);
-}
-`;
-const glowFragment = /* glsl */ `
-uniform vec3 uColor;
-varying vec2 vUv;
-void main() {
-  float d = length(vUv - 0.5) * 2.0;
-  float a = pow(max(1.0 - d, 0.0), 2.0) * 0.38;
-  gl_FragColor = vec4(uColor * a, 1.0);
-}
-`;
-const moteVertex = /* glsl */ `
-attribute float aSeed;
+
+const sunFragment = /* glsl */ `
 uniform float uTime;
-uniform float uPx;
-varying float vAlpha;
+varying vec2 vUv;
 void main() {
-  vec3 p = position;
-  float span = 2.9;
-  float y = mod(position.y + 1.3 + uTime * (0.16 + aSeed * 0.22), span);
-  p.y = y - 1.3;
-  p.x += sin(uTime * 0.7 + aSeed * 30.0) * 0.06;
-  vAlpha = smoothstep(0.0, 0.35, y) * (1.0 - smoothstep(span - 0.9, span, y));
-  vec4 mv = modelViewMatrix * vec4(p, 1.0);
-  gl_Position = projectionMatrix * mv;
-  gl_PointSize = uPx * (0.6 + aSeed * 0.9) / -mv.z;
+  vec2 p = vUv - 0.5;
+  float r = length(p) * 2.0;
+  if (r > 1.0) discard;
+
+  // Classic 80s / GTA VI Vice sunset gradient (gold top -> coral -> hot magenta bottom)
+  vec3 topCol = vec3(1.0, 0.88, 0.48);
+  vec3 midCol = vec3(1.0, 0.48, 0.36);
+  vec3 botCol = vec3(1.0, 0.22, 0.62);
+  vec3 col = mix(botCol, midCol, smoothstep(0.0, 0.55, vUv.y));
+  col = mix(col, topCol, smoothstep(0.45, 1.0, vUv.y));
+
+  // Horizontal synthwave scan slats in the lower half of the sun
+  if (vUv.y < 0.58) {
+    float freq = 18.0;
+    float wave = fract(vUv.y * freq - uTime * 0.12);
+    float cutThreshold = (0.62 - vUv.y) * 1.15;
+    if (wave < cutThreshold) discard;
+  }
+
+  float edge = smoothstep(1.0, 0.92, r);
+  gl_FragColor = vec4(col, edge * 0.92);
 }
 `;
-const moteFragment = /* glsl */ `
-uniform vec3 uColor;
-varying float vAlpha;
-void main() {
-  float d = length(gl_PointCoord - 0.5) * 2.0;
-  float a = pow(max(1.0 - d, 0.0), 2.0);
-  gl_FragColor = vec4(uColor * a * vAlpha * 0.9, 1.0);
-}
-`;
 
-function Pad({ accent }: { accent: string }) {
-  const dashRef = useRef<THREE.Mesh>(null);
-  const moteMat = useRef<THREE.ShaderMaterial>(null);
-  const color = useMemo(() => displayColor(accent), [accent]);
-
-  const motes = useMemo(() => {
-    const n = 34;
-    const pos = new Float32Array(n * 3);
-    const seed = new Float32Array(n);
-    for (let i = 0; i < n; i++) {
-      const a = (i * 2.399963) % (Math.PI * 2);
-      const r = 0.25 + ((i * 0.618) % 1) * 0.95;
-      pos.set([Math.cos(a) * r, ((i * 0.37) % 1) * 2.9 - 1.3, Math.sin(a) * r], i * 3);
-      seed[i] = (i * 0.754) % 1;
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    g.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
-    return g;
-  }, []);
-
-  useEffect(() => () => motes.dispose(), [motes]);
-
-  useFrame(({ clock, gl }, dt) => {
-    if (dashRef.current) dashRef.current.rotation.z -= dt * 0.25;
-    if (moteMat.current) {
-      moteMat.current.uniforms.uTime.value = clock.elapsedTime;
-      moteMat.current.uniforms.uPx.value = gl.domElement.height * 0.085;
-    }
+/** Stylized 3D Vice Palm Tree silhouette with neon rim sheen */
+function VicePalm({ position, scale = 1, flip = false }: { position: [number, number, number]; scale?: number; flip?: boolean }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(({ clock }) => {
+    if (!ref.current) return;
+    ref.current.rotation.z = Math.sin(clock.elapsedTime * 1.1 + (flip ? 2 : 0)) * 0.035;
   });
 
-  const common = { transparent: true, depthWrite: false, blending: THREE.AdditiveBlending } as const;
+  const fronds = [0, 55, 115, 180, 245, 305];
 
   return (
-    <group position={[0, -1.12, 0]}>
-      {/* floor glow */}
-      <mesh rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[4.4, 4.4]} />
-        <shaderMaterial args={[{ uniforms: { uColor: { value: color } }, vertexShader: beamVertex, fragmentShader: glowFragment }]} {...common} />
-      </mesh>
-      {/* pad rings */}
-      <mesh rotation-x={-Math.PI / 2} position-y={0.01}>
-        <ringGeometry args={[1.42, 1.46, 72]} />
-        <meshBasicMaterial color={accent} transparent opacity={0.9} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh ref={dashRef} rotation-x={-Math.PI / 2} position-y={0.012}>
-        <ringGeometry args={[1.12, 1.18, 48, 1, 0, Math.PI * 1.55]} />
-        <meshBasicMaterial color={accent} transparent opacity={0.45} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh rotation-x={-Math.PI / 2} position-y={0.008}>
-        <ringGeometry args={[0.02, 1.42, 6, 1]} />
-        <meshBasicMaterial color={accent} wireframe transparent opacity={0.14} />
-      </mesh>
-      {/* projector cone */}
-      <mesh position-y={1.5}>
-        <cylinderGeometry args={[1.75, 1.3, 3.0, 48, 1, true]} />
-        <shaderMaterial
-          args={[{ uniforms: { uColor: { value: color } }, vertexShader: beamVertex, fragmentShader: beamFragment }]}
-          side={THREE.DoubleSide}
-          {...common}
-        />
-      </mesh>
-      {/* rising motes */}
-      <points geometry={motes} position-y={1.3}>
-        <shaderMaterial
-          ref={moteMat}
-          args={[
-            {
-              uniforms: { uColor: { value: color }, uTime: { value: 0 }, uPx: { value: 40 } },
-              vertexShader: moteVertex,
-              fragmentShader: moteFragment,
-            },
-          ]}
-          {...common}
-        />
-      </points>
+    <group position={position} scale={[flip ? -scale : scale, scale, scale]}>
+      {/* Curved trunk segments */}
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <mesh
+          key={i}
+          position={[Math.pow(i * 0.14, 1.7) * 0.55, i * 0.36, 0]}
+          rotation={[0, 0, -i * 0.08]}
+        >
+          <cylinderGeometry args={[0.055 - i * 0.005, 0.07 - i * 0.005, 0.4, 8]} />
+          <meshStandardMaterial color="#160926" roughness={0.5} metalness={0.3} emissive="#ff5fa8" emissiveIntensity={0.08} />
+        </mesh>
+      ))}
+      {/* Crown & fronds */}
+      <group ref={ref} position={[0.42, 2.1, 0]}>
+        {fronds.map((deg, idx) => {
+          const rad = (deg * Math.PI) / 180;
+          return (
+            <group key={idx} rotation={[0, rad, 0]}>
+              <mesh position={[0.42, -0.05, 0]} rotation={[0, 0, -0.38]}>
+                <boxGeometry args={[0.85, 0.03, 0.16]} />
+                <meshStandardMaterial
+                  color="#120722"
+                  roughness={0.4}
+                  metalness={0.4}
+                  emissive={idx % 2 === 0 ? '#ff5fa8' : '#ffc46b'}
+                  emissiveIntensity={0.18}
+                />
+              </mesh>
+            </group>
+          );
+        })}
+      </group>
     </group>
   );
 }
 
-/* ---------------- model with materialise-in + optional drag to spin ---------------- */
+/** GTA VI Vice Sunset Stage: Neon Art-Deco Pedestal, Sunset Sun Disc & Twin Palms */
+function ViceStage({ accent }: { accent: string }) {
+  const ringRef = useRef<THREE.Mesh>(null);
+  const sunMat = useRef<THREE.ShaderMaterial>(null);
+
+  useFrame(({ clock }, dt) => {
+    if (ringRef.current) ringRef.current.rotation.z -= dt * 0.35;
+    if (sunMat.current) sunMat.current.uniforms.uTime.value = clock.elapsedTime;
+  });
+
+  return (
+    <group>
+      {/* 3-Point GTA VI Sunset Studio Lighting */}
+      <ambientLight intensity={1.25} color="#421c6b" />
+      <directionalLight position={[4, 6, 5]} intensity={2.6} color="#ffc46b" />
+      <pointLight position={[-4, 2.5, 2]} intensity={18} color="#ff5fa8" distance={14} />
+      <pointLight position={[3.5, -1, 3]} intensity={14} color="#45e3d0" distance={12} />
+      <pointLight position={[0, 1.5, -2]} intensity={10} color={accent} distance={10} />
+
+      {/* Slatted Vice Sunset Sun Disc in Background */}
+      <mesh position={[0, 0.55, -2.3]}>
+        <planeGeometry args={[3.5, 3.5]} />
+        <shaderMaterial
+          ref={sunMat}
+          transparent
+          depthWrite={false}
+          uniforms={{ uTime: { value: 0 } }}
+          vertexShader={sunVertex}
+          fragmentShader={sunFragment}
+        />
+      </mesh>
+
+      {/* Twin 3D Vice Palm Trees framing the background */}
+      <VicePalm position={[-2.25, -1.25, -1.7]} scale={0.92} />
+      <VicePalm position={[2.25, -1.25, -1.7]} scale={0.92} flip />
+
+      {/* Art-Deco Obsidian & Neon Boulevard Pedestal */}
+      <group position={[0, -1.15, 0]}>
+        {/* Solid Obsidian Octagonal Plinth */}
+        <mesh position={[0, -0.14, 0]}>
+          <cylinderGeometry args={[1.55, 1.72, 0.26, 16]} />
+          <meshStandardMaterial color="#120824" metalness={0.75} roughness={0.22} />
+        </mesh>
+
+        {/* Top Glossy Mirror Deck */}
+        <mesh position={[0, 0.0, 0]}>
+          <cylinderGeometry args={[1.48, 1.48, 0.04, 32]} />
+          <meshStandardMaterial color="#1d0d36" metalness={0.85} roughness={0.15} />
+        </mesh>
+
+        {/* Outer Hot-Pink Neon Tube Ring */}
+        <mesh rotation-x={-Math.PI / 2} position-y={0.025}>
+          <torusGeometry args={[1.5, 0.028, 12, 64]} />
+          <meshBasicMaterial color="#ff5fa8" />
+        </mesh>
+
+        {/* Inner Project-Accent Neon Tube Ring */}
+        <mesh ref={ringRef} rotation-x={-Math.PI / 2} position-y={0.028}>
+          <ringGeometry args={[1.14, 1.2, 32]} />
+          <meshBasicMaterial color={accent} side={THREE.DoubleSide} />
+        </mesh>
+
+        {/* Warm Sunset Floor Reflection Glow */}
+        <mesh rotation-x={-Math.PI / 2} position-y={-0.26}>
+          <ringGeometry args={[1.65, 2.7, 48]} />
+          <meshBasicMaterial color="#ff5fa8" transparent opacity={0.16} side={THREE.DoubleSide} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+/* ---------------- Model with materialise-in + optional drag to spin ---------------- */
 
 interface DragState {
   active: boolean;
@@ -175,33 +193,30 @@ function Model({
     if (!g) return;
     appear.current = Math.min(1, appear.current + dt * 2.4);
     const e = animate ? 1 - Math.pow(1 - appear.current, 3) : 1;
-    g.scale.setScalar(0.96 * (0.6 + 0.4 * e));
-    // user spin with inertia
+    g.scale.setScalar(0.96 * (0.65 + 0.35 * e));
     const d = drag.current;
     if (!d.active) {
       d.offset += d.velocity;
       d.velocity *= 0.94;
     }
-    g.rotation.y = d.offset + (1 - e) * -1.1;
-    g.position.y = 0.34 + (animate ? Math.sin(performance.now() * 0.0011) * 0.045 : 0);
+    g.rotation.y = d.offset + (1 - e) * -0.9;
+    g.position.y = 0.28 + (animate ? Math.sin(performance.now() * 0.0014) * 0.055 : 0);
   });
 
   return (
-    <group ref={ref} position={[0, 0.34, 0]} scale={0.96}>
+    <group ref={ref} position={[0, 0.28, 0]} scale={0.96}>
       <HoloModel shape={shape} />
     </group>
   );
 }
 
-/* ---------------- public viewer ---------------- */
+/* ---------------- Public Viewer ---------------- */
 
 interface HoloViewerProps {
   shape: Project['wireframeShape'];
   accent: string;
   className?: string;
-  /** Allow dragging to spin the model */
   interactive?: boolean;
-  /** Hold rendering (e.g. while a modal covers this viewer) */
   paused?: boolean;
 }
 
@@ -249,11 +264,11 @@ const HoloViewer: React.FC<HoloViewerProps> = ({ shape, accent, className = '', 
         dpr={[1, 1.6]}
         frameloop={running ? 'always' : 'demand'}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-        camera={{ position: [0, 0.9, 5.6], fov: 38 }}
+        camera={{ position: [0, 0.85, 5.5], fov: 38 }}
         style={{ pointerEvents: 'none' }}
       >
         <HoloProvider value={palette}>
-          <Pad accent={accent} />
+          <ViceStage accent={accent} />
           <Model key={shape} shape={shape} animate={!reduced} drag={drag} />
         </HoloProvider>
       </Canvas>

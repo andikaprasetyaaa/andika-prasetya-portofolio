@@ -137,11 +137,11 @@ export const Projects: React.FC = () => {
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-12">
-            {/* Left / Top: Spacious Interactive 3D Hologram Viewport */}
+            {/* Left / Top: Spacious Interactive GTA VI 3D Sunset Diorama Viewport */}
             <div
-              className="relative h-[17.5rem] overflow-hidden border-b border-white/[0.08] xs:h-[20rem] sm:h-[23rem] lg:col-span-6 lg:h-auto lg:min-h-[27rem] lg:border-b-0 lg:border-r"
+              className="relative h-[18rem] overflow-hidden border-b border-white/[0.08] xs:h-[20.5rem] sm:h-[23.5rem] lg:col-span-6 lg:h-auto lg:min-h-[27.5rem] lg:border-b-0 lg:border-r"
               style={{
-                background: `radial-gradient(80% 70% at 50% 95%, ${accent}26, transparent 70%), rgba(10, 6, 20, 0.78)`,
+                background: `radial-gradient(85% 75% at 50% 44%, rgba(255, 138, 92, 0.24), ${accent}22 48%, rgba(16, 8, 32, 0.94) 100%), linear-gradient(180deg, #1b0d38 0%, #35144a 52%, #130824 100%)`,
                 transition: 'background 0.5s ease',
               }}
             >

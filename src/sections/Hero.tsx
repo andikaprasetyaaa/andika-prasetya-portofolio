@@ -1,37 +1,25 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowDown, ArrowUpRight, MapPin, Radio, SkipForward, Volume2, VolumeX } from 'lucide-react';
-import { ABOUT, HERO, PROFILE, SECTIONS } from '../data/content';
+import { ArrowDown, ArrowUpRight, MapPin } from 'lucide-react';
+import { HERO, PROFILE, SECTIONS } from '../data/content';
 import { scrollToSection } from '../lib/scroll';
-import { useReducedMotionPref, useSettings, useUi } from '../lib/settings';
-import { RADIO_STATIONS, sound } from '../lib/sound';
-import { notify } from '../lib/toast';
+import { useReducedMotionPref, useUi } from '../lib/settings';
+import { sound } from '../lib/sound';
 import { EASE_OUT, StatusDot } from '../components/ui';
 
 export const Hero: React.FC = () => {
   const reduced = useReducedMotionPref();
   const { booted } = useUi();
-  const settings = useSettings();
   const ref = useRef<HTMLElement>(null);
-  const station = RADIO_STATIONS[settings.station % RADIO_STATIONS.length] ?? RADIO_STATIONS[0];
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], [0, -70]);
-  const opacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
+  const charY = useTransform(scrollYProgress, [0, 1], [0, -35]);
+  const opacity = useTransform(scrollYProgress, [0, 0.68], [1, 0]);
 
   const go = (id: string) => {
     sound.click();
     scrollToSection(id);
-  };
-
-  const toggleRadio = () => {
-    const on = sound.toggle();
-    notify(on ? `PLAYING ${station.name} — ${station.track}` : 'GTA RADIO MUTED');
-  };
-
-  const nextStation = () => {
-    const next = sound.nextStation();
-    notify(`TUNED TO ${next.name} · ${next.track}`);
   };
 
   const show = booted;
@@ -51,22 +39,22 @@ export const Hero: React.FC = () => {
       aria-labelledby="hero-title"
       className="relative flex min-h-[100svh] w-full flex-col overflow-hidden"
     >
-      {/* Legibility gradient weighted to reading areas while keeping the 3D bay open */}
+      {/* Legibility gradient weighted to the reading side while keeping the 3D sunset bay open behind the character */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'linear-gradient(95deg, rgba(9,4,18,0.76) 0%, rgba(9,4,18,0.36) 52%, rgba(9,4,18,0.48) 100%), linear-gradient(180deg, rgba(9,4,18,0.32) 0%, transparent 35%, transparent 62%, rgba(9,5,18,0.84) 100%)',
+            'linear-gradient(95deg, rgba(9,4,18,0.78) 0%, rgba(9,4,18,0.38) 50%, transparent 82%), linear-gradient(180deg, rgba(9,4,18,0.28) 0%, transparent 32%, transparent 64%, rgba(9,5,18,0.88) 100%)',
         }}
       />
 
       <motion.div
         style={reduced ? undefined : { y, opacity }}
-        className="shell relative z-10 my-auto flex flex-1 flex-col justify-center pb-24 pt-20 sm:pb-24 sm:pt-24"
+        className="shell relative z-10 my-auto flex flex-1 flex-col justify-center pb-20 pt-20 sm:pb-16 sm:pt-24"
       >
-        <div className="grid grid-cols-1 items-end gap-8 lg:grid-cols-12 lg:gap-10">
-          {/* Left: Clean non-overlapping GTA VI Poster Lockup */}
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-6">
+          {/* Left: GTA VI Poster Typography Lockup */}
           <div className="flex min-w-0 flex-col items-start lg:col-span-7">
             <motion.div {...rise(0.08)} className="flex flex-wrap items-center gap-3">
               <span className="chip !border-vice-pink/40 !bg-night-950/75 !py-1.5 !text-ink">
@@ -82,12 +70,12 @@ export const Hero: React.FC = () => {
               </span>
             </motion.div>
 
-            {/* Properly scaled Bebas Neue poster lockup that never overflows into the right column */}
+            {/* Monumental Bebas Neue poster lockup */}
             <div className="mt-4 w-full max-w-full overflow-hidden sm:mt-5">
               <h1
                 id="hero-title"
                 aria-label={PROFILE.name}
-                className="font-poster font-normal uppercase leading-[0.88] tracking-[0.025em] text-[clamp(3.3rem,min(9.2vw,13.5vh),7.1rem)] gta-shadow"
+                className="font-poster font-normal uppercase leading-[0.88] tracking-[0.025em] text-[clamp(3.3rem,min(9vw,13.5vh),7rem)] gta-shadow"
               >
                 {PROFILE.nameLines.map((line, i) => (
                   <span key={line} className="block overflow-hidden pb-[0.03em]" aria-hidden="true">
@@ -112,7 +100,7 @@ export const Hero: React.FC = () => {
 
             <motion.p
               {...rise(0.38)}
-              className="mt-4 font-hud text-sm font-bold uppercase tracking-[0.22em] text-vice-gold sm:mt-5 sm:text-base"
+              className="mt-4 font-hud text-sm font-bold uppercase tracking-[0.2em] text-vice-gold sm:mt-5 sm:text-base"
             >
               {HERO.eyebrow} &mdash; {PROFILE.title}
             </motion.p>
@@ -146,72 +134,35 @@ export const Hero: React.FC = () => {
             </motion.div>
           </div>
 
-          {/* Right: GTA Radio Soundtrack Deck & Quick Vitals Card */}
-          <motion.div {...rise(0.66)} className="min-w-0 lg:col-span-5">
-            <div className="panel panel-accent overflow-hidden p-5 sm:p-6">
-              {/* Live GTA Radio Station Deck */}
-              <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
-                <div className="flex min-w-0 items-center gap-3.5">
-                  <button
-                    type="button"
-                    onClick={toggleRadio}
-                    aria-label={settings.sound ? 'Mute GTA radio' : 'Play GTA radio'}
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-transform hover:scale-105 ${
-                      settings.sound ? 'bg-sunset text-night-950 shadow-glow' : 'border border-white/15 bg-white/5 text-ink-mute'
-                    }`}
-                  >
-                    {settings.sound ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
-                  </button>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <Radio className="h-3.5 w-3.5 shrink-0 text-vice-pink" aria-hidden="true" />
-                      <span className="truncate font-hud text-xs font-bold uppercase tracking-[0.18em] text-vice-amber">
-                        {station.freq} &middot; {station.name}
-                      </span>
-                    </div>
-                    <p className="mt-0.5 truncate font-hud text-lg font-bold uppercase tracking-[0.06em] text-ink sm:text-xl">
-                      {station.track}
-                    </p>
-                  </div>
-                </div>
+          {/* Right: Frameless GTA VI Key-Art Character Cut-Out of Andika over the 3D Sunset Skyline */}
+          <motion.div
+            style={reduced ? undefined : { y: charY }}
+            initial={reduced ? false : { opacity: 0, scale: 0.94, y: 32 }}
+            animate={show || reduced ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.94, y: 32 }}
+            transition={{ duration: 1.05, delay: 0.32, ease: EASE_OUT }}
+            className="relative flex items-end justify-center lg:col-span-5"
+          >
+            {/* Subtle warm sunset rim aura behind the transparent character cutout */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-6 top-8 bottom-4 -z-10 rounded-full blur-3xl opacity-75"
+              style={{
+                background:
+                  'radial-gradient(circle at 50% 42%, rgba(255, 138, 92, 0.42), rgba(255, 95, 168, 0.32) 48%, rgba(157, 107, 255, 0.12) 72%, transparent 85%)',
+              }}
+            />
 
-                <div className="flex shrink-0 items-center gap-2">
-                  <div className="hidden xs:flex items-end gap-[3px] h-5 px-1" aria-hidden="true">
-                    {[0, 120, 240, 90, 200].map((d, idx) => (
-                      <span
-                        key={idx}
-                        className={`w-[3px] rounded-full bg-sunset transition-all duration-300 ${
-                          settings.sound ? 'h-full animate-pulse' : 'h-1.5 opacity-35'
-                        }`}
-                        style={{ animationDelay: `${d}ms` }}
-                      />
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={nextStation}
-                    aria-label="Next GTA theme track"
-                    title="Switch GTA Theme Track"
-                    className="flex h-9 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 font-hud text-xs font-bold uppercase tracking-[0.14em] text-ink-soft transition-colors hover:border-vice-amber/70 hover:text-ink"
-                  >
-                    <span>NEXT</span>
-                    <SkipForward className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* 3 Responsive Protagonist Vitals */}
-              <dl className="mt-4 grid grid-cols-3 gap-2.5 sm:gap-3">
-                {ABOUT.metrics.map((m) => (
-                  <div key={m.subtitle} className="rounded-xl border border-white/[0.07] bg-white/[0.035] px-3 py-3 sm:px-3.5">
-                    <dd className="stat-num text-2xl font-normal text-sunset sm:text-3xl">{m.value}</dd>
-                    <dt className="mt-1 font-hud text-[0.68rem] font-bold uppercase tracking-[0.12em] text-ink sm:text-xs">
-                      {m.unit}
-                    </dt>
-                  </div>
-                ))}
-              </dl>
-            </div>
+            <img
+              src="/andika-gta6.png"
+              alt="I Putu Andika Prasetya — GTA VI Key-Art Portrait"
+              className="pointer-events-none relative z-10 mx-auto h-auto max-h-[22rem] w-auto object-contain select-none xs:max-h-[25rem] sm:max-h-[29rem] lg:max-h-[36rem]"
+              style={{
+                filter:
+                  'drop-shadow(0 22px 44px rgba(7, 3, 16, 0.9)) drop-shadow(0 0 24px rgba(255, 95, 168, 0.22))',
+                WebkitMaskImage: 'linear-gradient(to bottom, #000 86%, transparent 100%)',
+                maskImage: 'linear-gradient(to bottom, #000 86%, transparent 100%)',
+              }}
+            />
           </motion.div>
         </div>
       </motion.div>

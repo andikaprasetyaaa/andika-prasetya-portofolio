@@ -84,9 +84,13 @@ export const About: React.FC = () => {
             </div>
 
             <div className="relative mt-4 flex items-center gap-4">
-              <div className="relative h-14 w-14 shrink-0 rounded-2xl bg-sunset p-[2px] shadow-glow sm:h-16 sm:w-16">
-                <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-night-900">
-                  <span className="font-poster text-2xl leading-none text-sunset sm:text-3xl">{PROFILE.monogram}</span>
+              <div className="relative h-16 w-16 shrink-0 rounded-2xl bg-sunset p-[2px] shadow-glow sm:h-20 sm:w-20">
+                <div className="flex h-full w-full items-end justify-center overflow-hidden rounded-[14px] bg-gradient-to-b from-[#2b1348] to-night-900">
+                  <img
+                    src="/andika-gta6.png"
+                    alt={PROFILE.name}
+                    className="h-[115%] w-full object-cover object-top"
+                  />
                 </div>
                 <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-night-900">
                   <StatusDot ping />
