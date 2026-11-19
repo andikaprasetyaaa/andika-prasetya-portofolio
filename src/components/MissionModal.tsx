@@ -16,7 +16,7 @@ interface Props {
   onClose: () => void;
 }
 
-/** Full mission briefing: everything about one project, with a hologram you can spin. */
+/** Full GTA-style project briefing modal with interactive 3D hologram. */
 export const MissionModal: React.FC<Props> = ({ project, onClose }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const lastFocus = useRef<HTMLElement | null>(null);
@@ -86,76 +86,75 @@ export const MissionModal: React.FC<Props> = ({ project, onClose }) => {
             aria-labelledby="mission-title"
             className="panel relative z-10 flex max-h-[92svh] w-full max-w-5xl flex-col overflow-hidden"
             style={{ borderColor: `${accent}55` }}
-            initial={{ opacity: 0, scale: 0.94, y: 28 }}
+            initial={{ opacity: 0, scale: 0.95, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 18 }}
-            transition={{ duration: 0.5, ease: EASE_OUT }}
+            exit={{ opacity: 0, scale: 0.97, y: 16 }}
+            transition={{ duration: 0.45, ease: EASE_OUT }}
           >
-            <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5" style={{ background: accent }} />
+            <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[2px]" style={{ background: accent }} />
 
-            {/* top bar */}
-            <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] bg-night-950/50 px-5 py-3.5 sm:px-7">
+            {/* Header */}
+            <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] bg-night-950/45 px-5 py-3.5 sm:px-7">
               <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
                 <StatusDot ping />
-                <span className="hud-label !text-ink">DEPLOYMENT // {project.deploymentId}</span>
-                <span className="hud-label hidden sm:inline">|</span>
-                <span className="hud-label">{project.category}</span>
+                <span className="font-hud text-sm font-bold uppercase tracking-[0.18em] text-ink">{project.category}</span>
+                <span className="text-ink-faint">&middot;</span>
+                <span className="font-hud text-sm font-semibold uppercase tracking-[0.16em] text-ink-mute">{project.badge}</span>
               </div>
               <button
                 type="button"
                 onClick={close}
                 aria-label="Close briefing"
-                className="flex h-9 shrink-0 items-center gap-2 rounded-md border border-white/10 px-2.5 font-hud text-[0.7rem] font-semibold tracking-[0.16em] text-ink-soft transition-colors hover:border-vice-pink/60 hover:text-ink"
+                className="flex h-9 shrink-0 items-center gap-2 rounded-full border border-white/15 px-3.5 font-hud text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft transition-colors hover:border-vice-amber/70 hover:text-ink"
               >
                 <X className="h-4 w-4" />
-                <kbd className="hidden sm:inline text-[0.62rem] text-ink-mute">ESC</kbd>
+                <span className="hidden sm:inline">CLOSE</span>
               </button>
             </div>
 
-            {/* body */}
+            {/* Body */}
             <div data-lenis-prevent className="overflow-y-auto overscroll-contain">
-              <div className="grid grid-cols-1 gap-7 p-5 sm:p-7 lg:grid-cols-12 lg:gap-9">
-                {/* left: hologram + numbers */}
+              <div className="grid grid-cols-1 gap-7 p-5 sm:p-8 lg:grid-cols-12 lg:gap-10">
+                {/* Left: 3D hologram + specs */}
                 <div className="flex flex-col gap-4 lg:col-span-5">
                   <div
-                    className="relative h-60 overflow-hidden rounded-lg border border-white/[0.08] sm:h-72"
+                    className="relative h-64 overflow-hidden rounded-2xl border border-white/[0.08] sm:h-72"
                     style={{ background: `radial-gradient(80% 70% at 50% 100%, ${accent}26, transparent 70%), #0a0614` }}
                   >
                     <Suspense fallback={null}>
                       <HoloViewer shape={project.wireframeShape} accent={accent} interactive className="h-full w-full" />
                     </Suspense>
-                    <div className="pointer-events-none absolute inset-x-3 top-3 flex items-center justify-between gap-3">
-                      <span className="hud-label !text-[0.64rem]" style={{ color: accent }}>
-                        {SHAPE_LABELS[project.wireframeShape] ?? '3D CAD SCHEMATIC'}
+                    <div className="pointer-events-none absolute inset-x-4 top-3.5 flex items-center justify-between gap-3">
+                      <span className="font-hud text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: accent }}>
+                        {SHAPE_LABELS[project.wireframeShape] ?? '3D HOLOGRAM'}
                       </span>
-                      <span className="hud-label hidden !text-[0.62rem] sm:block">{PROJECTS_COPY.modal.renderNote}</span>
                     </div>
-                    <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-center justify-between gap-3">
-                      <span className="hud-label !text-[0.62rem]">{PROJECTS_COPY.modal.engine}</span>
-                      <span className="hud-label !text-[0.62rem] !text-ink-soft">DRAG TO SPIN</span>
+                    <div className="pointer-events-none absolute inset-x-4 bottom-3 flex items-center justify-between gap-3">
+                      <span className="font-hud text-xs font-semibold uppercase tracking-[0.16em] text-ink-mute">
+                        {PROJECTS_COPY.modal.engine}
+                      </span>
+                      <span className="font-hud text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft">
+                        {PROJECTS_COPY.dragHint}
+                      </span>
                     </div>
                   </div>
 
-                  <dl className="grid grid-cols-2 gap-2.5">
-                    <div className="rounded-md border border-white/[0.07] bg-white/[0.035] px-3.5 py-3">
-                      <dt className="hud-label !text-[0.64rem]">{project.metricLabel}</dt>
-                      <dd className="stat-num mt-2 text-[1.7rem]" style={{ color: accent }}>
+                  <dl className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-white/[0.07] bg-white/[0.035] px-4 py-3">
+                      <dt className="hud-label !text-[0.72rem]">{project.metricLabel}</dt>
+                      <dd className="stat-num mt-1.5 text-[1.9rem]" style={{ color: accent }}>
                         {project.metricValue}
                       </dd>
                     </div>
-                    <div className="rounded-md border border-white/[0.07] bg-white/[0.035] px-3.5 py-3">
-                      <dt className="hud-label !text-[0.64rem]">{project.architectureLabel}</dt>
-                      <dd className="mt-2 font-hud text-[0.9rem] font-bold leading-snug text-ink">{project.architectureValue}</dd>
-                    </div>
-                    <div className="col-span-2 flex items-center justify-between rounded-md border border-white/[0.07] bg-white/[0.035] px-3.5 py-2.5">
-                      <dt className="hud-label !text-[0.64rem]">{PROJECTS_COPY.modal.verificationLabel}</dt>
-                      <dd className="font-hud text-[0.8rem] font-bold tracking-[0.12em] text-vice-mint">
-                        {PROJECTS_COPY.modal.verificationValue}
+                    <div className="rounded-xl border border-white/[0.07] bg-white/[0.035] px-4 py-3">
+                      <dt className="hud-label !text-[0.72rem]">{project.architectureLabel}</dt>
+                      <dd className="mt-2 font-hud text-base font-bold uppercase leading-snug tracking-[0.06em] text-ink">
+                        {project.architectureValue}
                       </dd>
                     </div>
                   </dl>
 
-                  <dl className="flex flex-col gap-2.5 rounded-md border border-white/[0.07] bg-night-950/40 p-3.5">
+                  <dl className="flex flex-col gap-3 rounded-xl border border-white/[0.07] bg-night-950/40 p-4">
                     {[
                       { icon: Cpu, label: 'RUNTIME', value: project.specs.runtime },
                       { icon: Server, label: 'THROUGHPUT', value: project.specs.throughput },
@@ -164,25 +163,23 @@ export const MissionModal: React.FC<Props> = ({ project, onClose }) => {
                       <div key={s.label} className="flex items-start gap-3">
                         <s.icon className="mt-0.5 h-4 w-4 shrink-0 text-ink-mute" aria-hidden="true" />
                         <div>
-                          <dt className="hud-label !text-[0.62rem]">{s.label}</dt>
-                          <dd className="mt-0.5 font-mono text-[0.8rem] leading-snug text-ink">{s.value}</dd>
+                          <dt className="hud-label !text-[0.7rem]">{s.label}</dt>
+                          <dd className="mt-0.5 font-mono text-xs leading-snug text-ink">{s.value}</dd>
                         </div>
                       </div>
                     ))}
                   </dl>
                 </div>
 
-                {/* right: story */}
+                {/* Right: Story */}
                 <div className="flex flex-col gap-6 lg:col-span-7">
                   <div>
-                    <p className="hud-label">{project.subtitle}</p>
-                    <h2 id="mission-title" className="mt-2.5 font-display text-[clamp(1.8rem,3.4vw,2.7rem)] uppercase leading-[1.03] text-ink">
+                    <p className="hud-label" style={{ color: accent }}>
+                      {project.subtitle}
+                    </p>
+                    <h2 id="mission-title" className="mt-2 font-display text-[clamp(2rem,3.6vw,3rem)] uppercase leading-[0.98] text-ink">
                       {project.title}
                     </h2>
-                    <span className="chip mt-4" style={{ borderColor: `${accent}66`, color: accent }}>
-                      <StatusDot ping />
-                      {project.badge}
-                    </span>
                   </div>
 
                   <div>
@@ -213,9 +210,9 @@ export const MissionModal: React.FC<Props> = ({ project, onClose }) => {
               </div>
             </div>
 
-            {/* actions */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] bg-night-950/50 px-5 py-4 sm:px-7">
-              <span className="hud-label">{PROJECTS_COPY.modal.status}</span>
+            {/* Footer */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] bg-night-950/45 px-5 py-4 sm:px-7">
+              <span className="font-mono text-xs text-ink-mute">{project.repo}</span>
               <a
                 href={project.githubUrl}
                 target="_blank"
@@ -224,7 +221,7 @@ export const MissionModal: React.FC<Props> = ({ project, onClose }) => {
                 className="btn btn-primary btn-sm"
               >
                 <Github className="h-4 w-4" />
-                {PROJECTS_COPY.openRepo}
+                {PROJECTS_COPY.modal.openRepo}
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             </div>

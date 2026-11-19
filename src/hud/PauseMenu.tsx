@@ -21,7 +21,7 @@ function Segmented<T extends string>({
   return (
     <div className="flex items-center justify-between gap-4 py-3">
       <span className="font-hud text-[0.82rem] font-semibold tracking-[0.14em] text-ink-soft">{label}</span>
-      <div role="radiogroup" aria-label={label} className="flex overflow-hidden rounded-md border border-white/10 bg-night-950/60 p-0.5">
+      <div role="radiogroup" aria-label={label} className="flex overflow-hidden rounded-full border border-white/12 bg-night-950/60 p-0.5">
         {options.map((o) => {
           const on = o.value === value;
           return (
@@ -34,7 +34,7 @@ function Segmented<T extends string>({
                 sound.click();
                 onChange(o.value);
               }}
-              className={`rounded-[5px] px-3 py-1.5 font-hud text-[0.72rem] font-bold tracking-[0.14em] transition-colors ${
+              className={`rounded-full px-3.5 py-1.5 font-hud text-xs font-bold uppercase tracking-[0.14em] transition-colors ${
                 on ? 'bg-sunset text-night-950' : 'text-ink-mute hover:text-ink'
               }`}
             >
@@ -144,11 +144,10 @@ export const PauseMenu: React.FC = () => {
               <button
                 type="button"
                 onClick={close}
-                className="flex h-10 items-center gap-2 rounded-md border border-white/10 bg-night-900/60 px-3 font-hud text-[0.74rem] font-semibold tracking-[0.16em] text-ink-soft transition-colors hover:border-vice-pink/60 hover:text-ink"
+                className="flex h-10 items-center gap-2 rounded-full border border-white/15 bg-night-900/60 px-4 font-hud text-xs font-bold tracking-[0.16em] text-ink-soft transition-colors hover:border-vice-amber/70 hover:text-ink"
               >
                 <X className="h-4 w-4" />
                 <span>BACK</span>
-                <kbd className="hidden sm:inline rounded border border-white/15 px-1.5 py-0.5 text-[0.62rem] text-ink-mute">ESC</kbd>
               </button>
             </div>
             <div className="hairline mt-5" />
@@ -209,17 +208,30 @@ export const PauseMenu: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.18, ease: EASE_OUT }}
               >
                 <section aria-label="Settings" className="panel panel-accent p-5 sm:p-6">
-                  <p className="hud-label mb-2">SETTINGS</p>
+                  <p className="hud-label mb-2">SETTINGS &amp; RADIO</p>
                   <div className="divide-y divide-white/[0.07]">
                     <Segmented
-                      label="SOUND FX"
+                      label="GTA RADIO & SFX"
                       value={settings.sound ? 'on' : 'off'}
                       options={[
-                        { value: 'off', label: 'OFF' },
-                        { value: 'on', label: 'ON' },
+                        { value: 'off', label: 'MUTED' },
+                        { value: 'on', label: 'PLAYING' },
                       ]}
                       onChange={(v) => {
                         if ((v === 'on') !== settings.sound) sound.toggle();
+                      }}
+                    />
+                    <Segmented<'0' | '1' | '2'>
+                      label="GTA THEME TRACK"
+                      value={String(settings.station % 3) as '0' | '1' | '2'}
+                      options={[
+                        { value: '0', label: 'VICE CITY' },
+                        { value: '1', label: 'SAN ANDREAS' },
+                        { value: '2', label: 'SYNTHWAVE' },
+                      ]}
+                      onChange={(v) => {
+                        settingsStore.set({ station: Number(v), sound: true });
+                        sound.startMusic();
                       }}
                     />
                     <Segmented<MotionPref>

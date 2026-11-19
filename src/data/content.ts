@@ -1,4 +1,4 @@
-// All portfolio copy lives here so the presentation layer can change without touching the content.
+// All portfolio copy lives here so layout and presentation remain clean and editorial.
 
 export const SECTION_IDS = ['hero', 'about', 'projects', 'stack', 'timeline', 'contact'] as const;
 export type SectionId = (typeof SECTION_IDS)[number];
@@ -8,9 +8,9 @@ export interface SectionMeta {
   index: string;
   /** Short nav label */
   label: string;
-  /** Section caption, as used in the section header */
+  /** GTA VI chapter eyebrow */
   caption: string;
-  /** One-line teaser used by the pause menu and the area banner */
+  /** One-line teaser for pause menu */
   teaser: string;
 }
 
@@ -18,53 +18,53 @@ export const SECTIONS: SectionMeta[] = [
   {
     id: 'hero',
     index: '01',
-    label: 'HERO',
-    caption: 'ARTIFICIAL INTELLIGENCE & SYSTEMS AUTOMATION',
+    label: 'INTRO',
+    caption: 'GIANYAR · BALI, INDONESIA',
     teaser: 'AI Engineer & Automation Specialist',
   },
   {
     id: 'about',
     index: '02',
-    label: 'ABOUT',
-    caption: 'PERSONA & QUANTITATIVE RECORD',
-    teaser: 'Operator dossier, education and key metrics',
+    label: 'PROFILE',
+    caption: 'THE ARCHITECT',
+    teaser: 'Background, Udayana degree & key numbers',
   },
   {
     id: 'projects',
     index: '03',
-    label: 'PROJECTS',
-    caption: 'SELECTED WORKS & SYSTEM DEPLOYMENTS',
-    teaser: 'Production protocols — featured AI projects',
+    label: 'WORK',
+    caption: 'SELECTED WORK',
+    teaser: 'Interactive 3D showcase of eight AI builds',
   },
   {
     id: 'stack',
     index: '04',
     label: 'STACK',
-    caption: 'TECHNICAL MATRIX & TOOLCHAIN',
-    teaser: 'Capabilities & computational rigor',
+    caption: 'THE ARSENAL',
+    teaser: 'Models, retrieval engines & infrastructure',
   },
   {
     id: 'timeline',
     index: '05',
-    label: 'TIMELINE',
-    caption: 'CHRONOLOGY & ENGINEERING PRACTICE',
-    teaser: 'Experience & technical record',
+    label: 'CAREER',
+    caption: 'THE RECORD',
+    teaser: 'Industry experience & Universitas Udayana',
   },
   {
     id: 'contact',
     index: '06',
     label: 'CONTACT',
-    caption: 'TERMINAL HANDSHAKE & TRANSMISSION',
-    teaser: "Let's build something intelligent",
+    caption: 'MAKE CONTACT',
+    teaser: 'Direct inbox, socials & resume',
   },
 ];
 
 export const PROFILE = {
   name: 'I PUTU ANDIKA PRASETYA',
-  nameLines: ['I PUTU ANDIKA', 'PRASETYA'],
+  nameLines: ['ANDIKA', 'PRASETYA'],
   title: 'AI ENGINEER & AUTOMATION SPECIALIST',
-  brand: 'PORTFOLIO',
-  monogram: 'P',
+  brand: 'ANDIKA',
+  monogram: 'AP',
   availability: 'AVAILABLE FOR HIRE',
   email: 'andikaprasetyaa@gmail.com',
   cvUrl: 'https://drive.google.com/file/d/1ds1m5DI1xfXoVL6_EQa2WoXo65RanzeZ/view?usp=sharing',
@@ -72,160 +72,106 @@ export const PROFILE = {
   linkedinUrl: 'https://linkedin.com/in/andikaprasetya',
   repoUrl: 'https://github.com/andikaprasetyaaa/andika-prasetya-portofolio',
   domain: 'andikaprasetya.dev',
-  location: 'BALI, INDONESIA // REMOTE',
-  coords: 'LAT 8.3405° S, 115.0920° E / BALI - ID',
+  location: 'Gianyar, Bali, Indonesia · UTC+8 · Remote Worldwide',
+  coords: '8.54° S · 115.32° E · GIANYAR, BALI',
 };
 
 export const HERO = {
+  eyebrow: 'I PUTU ANDIKA PRASETYA',
   roles: ['AI ENGINEER', 'MACHINE LEARNING', 'DATA ENGINEERING', 'NLP & LLMS', 'AGENTIC WORKFLOWS'],
-  lead: 'Engineering deterministic intelligence, autonomous agentic workflows, and high-throughput natural language systems with mathematical rigor.',
-  primaryCta: 'EXPLORE ARTIFACTS',
-  secondaryCta: 'SYSTEM VITALS [3.91 GPA]',
-  metrics: [
-    { value: '12+', label: 'AUTONOMOUS PIPELINES' },
-    { value: '99.8%', label: 'RAG FIDELITY' },
-    { value: '< 150MS', label: 'EDGE INFERENCE' },
-  ],
-  telemetry: {
-    loc: 'LOC // 8.3405° S, 115.0920° E',
-    node: 'NODE // ID_DPS_CORE',
-    security: 'SECURITY_LAYER: ED25519',
-    verified: 'SHA-256 VERIFIED',
-  },
-  scrollCue: 'SCROLL TO COMMENCE INQUIRY',
+  lead: 'Engineering intelligent systems, retrieval pipelines, and autonomous workflows built to hold up in production.',
+  primaryCta: 'EXPLORE WORK',
+  secondaryCta: 'THE ARCHITECT',
+  scrollCue: 'SCROLL TO EXPLORE',
 };
 
 export const ABOUT = {
-  status: ['SYS_STATUS: NOMINAL', 'INDEX REF: ARCH-PERS-2026', 'SECURITY TIER: ALPHA'],
-  dossier: {
-    heading: 'OPERATOR // DOSSIER',
-    verified: 'VERIFIED IDENT',
-    fields: [
-      { label: 'DEGREE', value: 'S.Kom (Data Science)' },
-      { label: 'GPA RECORD', value: '3.91 / 4.00 (Summa)' },
-      { label: 'SYSTEM CORE', value: 'NLP & GraphRAG' },
-      { label: 'AVAILABILITY', value: 'OPEN FOR HIRE' },
-    ],
-  },
-  quote:
-    'I build intelligent systems from raw data to something that actually works. Models, retrieval, APIs, automation, databases.',
-  focusLabel: 'Current Focus:',
-  focus: 'Making machines understand text, retrieve the right context, and do useful things with it.',
-  footnotes: ['DOMAIN: andikaprasetya.dev', 'INFERENCE: FP8_OPTIMIZED'],
-  kicker: 'DISCIPLINE // CORE ARCHITECTURE',
-  headline: 'ENGINEERING AT THE INTERSECTION OF DEEP LEARNING & DETERMINISTIC SCALE.',
-  body: 'Bridging foundational algorithmic rigor with production systems engineering. My trajectory anchors on resolving computational friction within multilingual NLP frameworks and transforming probabilistic LLM uncertainty into deterministic execution graphs.',
-  education: {
-    label: 'EDUCATION // BACKGROUND',
-    school: 'Universitas Udayana — B.Sc. Information Technology (Data Science)',
-    detail: 'GPA 3.91 (Highest Distinction), Graduated 2026',
-  },
-  metrics: [
-    { id: 'METRIC_01', value: '3.91', unit: '/ 4.00 GPA', subtitle: 'Highest Distinction' },
-    { id: 'METRIC_02', value: '18+', unit: 'AI Systems', subtitle: 'Shipped To Production' },
-    { id: 'METRIC_03', value: '08', unit: 'Core Protocols', subtitle: 'Featured AI Projects' },
-    { id: 'METRIC_04', value: '99.4%', unit: 'Pipeline SLA', subtitle: 'Automated Uptime' },
+  headline: 'BUILT FROM RAW DATA TO PRODUCTION.',
+  quote: 'I build intelligent systems from raw data to something that actually works.',
+  body: 'Based in Gianyar, Bali and graduating with a 3.91 GPA in Data Science from Universitas Udayana, I turn unstructured text, graphs, and live video streams into fast, reliable software.',
+  focusLabel: 'Current Obsession',
+  focus: 'Low-resource Indonesian NLP, GraphRAG knowledge engines, and autonomous automation.',
+  dossierFields: [
+    { label: 'DEGREE', value: 'B.Sc. IT (Data Science)' },
+    { label: 'UNIVERSITY', value: 'Universitas Udayana · 2026' },
+    { label: 'STANDING', value: '3.91 / 4.00 GPA' },
+    { label: 'LOCATION', value: 'Gianyar, Bali · ID' },
   ],
-  domainsLabel: 'PRIMARY INVESTIGATION DOMAINS',
-  domainsCount: '[ N=05 AXES ]',
+  metrics: [
+    { value: '3.91', unit: '/ 4.00 GPA', subtitle: 'Highest Distinction' },
+    { value: '18+', unit: 'AI Systems', subtitle: 'Shipped to Production' },
+    { value: '08', unit: 'Featured Builds', subtitle: 'Open Source & Live' },
+  ],
   domains: [
     'LLM RAG & Knowledge Graphs',
-    'Low-Resource Multilingual NLP',
-    'High-Throughput ETL & Event Streams',
-    'Computer Vision Kinematics',
-    'Autonomous Multi-Agent Swarms',
+    'Multilingual Indonesian NLP',
+    'High-Throughput ETL',
+    'Computer Vision',
+    'Autonomous Workflows',
   ],
-  footer: ['QUANTITATIVE PROFILE', 'STATUS: CERTIFIED'],
 };
 
 export const PROJECTS_COPY = {
-  heading: 'PRODUCTION PROTOCOLS',
-  sub: 'MISSION-CRITICAL NEURAL AGENTS & EDGE DISTRIBUTIONS',
-  inspect: 'INSPECT PROTOCOL',
-  openRepo: 'OPEN REPOSITORY',
-  totalLabel: 'TOTAL VERIFIED DEPLOYMENTS',
-  online: 'ONLINE',
+  heading: 'FEATURED WORK',
+  sub: 'Eight production builds. Drag the hologram to inspect, or open the full briefing.',
+  inspect: 'OPEN BRIEFING',
+  openRepo: 'GITHUB',
+  dragHint: 'DRAG TO ROTATE',
   modal: {
-    overview: '// ARCHITECTURAL OVERVIEW',
-    features: '// PROTOCOL CAPABILITIES & SUBROUTINES',
-    verificationLabel: 'VERIFICATION',
-    verificationValue: 'SHA-256 AUDITED',
-    renderNote: 'PROCEDURAL R3F RENDER',
-    engine: 'RENDER ENGINE: WEBGL / THREE.JS',
-    interactive: 'INTERACTIVE TELEMETRY',
-    status: 'STATUS: PRODUCTION REPOSITORY',
+    overview: 'THE BRIEF',
+    features: 'KEY CAPABILITIES',
+    engine: 'INTERACTIVE 3D HOLOGRAM',
+    openRepo: 'VIEW ON GITHUB',
   },
 };
 
 export const SHAPE_LABELS: Record<string, string> = {
-  boxing: '3D BOXING RING // 4-ROPE PRO',
-  'ufc-octagon': '3D UFC OCTAGON CAGE',
-  newspaper: '3D NEWS DOCUMENT SCAN',
-  'fashion-hanger': '3D GARMENT & HANGER',
-  'discount-tag': '3D DISCOUNT PRICE TAG',
-  'shopping-cart': '3D SHOPPING CART & PULSE',
-  'chat-shield': '3D CHAT BUBBLE & SHIELD',
-  'vision-apple': '3D VISION AI RETICLE',
+  boxing: '3D BOXING RING',
+  'ufc-octagon': '3D OCTAGON ARENA',
+  newspaper: '3D NEWS MATRIX',
+  'fashion-hanger': '3D APPAREL TELEMETRY',
+  'discount-tag': '3D PRICING AUDIT',
+  'shopping-cart': '3D COMMERCE STREAM',
+  'chat-shield': '3D MODERATION SHIELD',
+  'vision-apple': '3D EDGE VISION TARGET',
 };
 
 export type StackIcon = 'cpu' | 'layers' | 'database' | 'terminal';
 
 export const STACK = {
-  status: ['CLOCK: 3.4 GHz TENSOR-PIPE', 'STATE: REAL-TIME ARBITRAGE'],
-  heading: 'CAPABILITIES & COMPUTATIONAL RIGOR',
-  lead: 'Hardened architectural models, deterministic orchestration, and high-throughput vector compute pipelines.',
-  orbitLabel: '// 3D ORBITAL TENSOR RUNTIME',
+  heading: 'THE ARSENAL',
+  lead: 'Core models, retrieval engines, and infrastructure behind every shipped system.',
+  orbitHint: 'SELECT A QUADRANT TO INSPECT',
   categories: [
     {
-      id: 'CAT_01',
+      id: '01',
       title: 'AI & MACHINE LEARNING',
       icon: 'cpu' as StackIcon,
-      skills: [
-        { name: 'Python', role: 'Core Lang' },
-        { name: 'PyTorch', role: 'Deep Learning' },
-        { name: 'TensorFlow', role: 'Neural Nets' },
-        { name: 'Hugging Face', role: 'Transformers' },
-        { name: 'Jupyter', role: 'Notebooks' },
-      ],
+      summary: 'Deep learning architectures, edge quantization, and multimodal inference.',
+      skills: ['Python', 'PyTorch', 'TensorFlow', 'Hugging Face', 'Jupyter'],
     },
     {
-      id: 'CAT_02',
+      id: '02',
       title: 'NLP & LLM ARCHITECTURE',
       icon: 'layers' as StackIcon,
-      skills: [
-        { name: 'RAG Systems', role: 'Retrieval' },
-        { name: 'FAISS / ANN', role: 'Vector Search' },
-        { name: 'BM25', role: 'Hybrid Rank' },
-        { name: 'Gemini API', role: 'Multimodal' },
-        { name: 'Cohere', role: 'Embeddings' },
-      ],
+      summary: 'Hybrid retrieval, entity disambiguation, and grounded text synthesis.',
+      skills: ['RAG Systems', 'FAISS / ANN', 'BM25', 'Gemini API', 'Cohere'],
     },
     {
-      id: 'CAT_03',
-      title: 'DATA ENGINEERING & OLAP',
+      id: '03',
+      title: 'DATA & GRAPH SYSTEMS',
       icon: 'database' as StackIcon,
-      skills: [
-        { name: 'PostgreSQL', role: 'Relational' },
-        { name: 'Pandas / NumPy', role: 'Vectorized' },
-        { name: 'MySQL', role: 'Transactions' },
-        { name: 'MongoDB', role: 'Document' },
-        { name: 'Neo4j', role: 'Graph DB' },
-      ],
+      summary: 'Relational warehousing, connected knowledge graphs, and fast analytics.',
+      skills: ['PostgreSQL', 'Pandas / NumPy', 'MySQL', 'MongoDB', 'Neo4j'],
     },
     {
-      id: 'CAT_04',
-      title: 'BACKEND & INFRASTRUCTURE',
+      id: '04',
+      title: 'BACKEND & AUTOMATION',
       icon: 'terminal' as StackIcon,
-      skills: [
-        { name: 'FastAPI', role: 'REST / Async' },
-        { name: 'Docker', role: 'Containers' },
-        { name: 'n8n', role: 'Automation' },
-        { name: 'Streamlit', role: 'UI Dashboards' },
-        { name: 'Git & CI/CD', role: 'VCS Workflow' },
-      ],
+      summary: 'Containerized async services, scheduled pipelines, and live ops UIs.',
+      skills: ['FastAPI', 'Docker', 'n8n', 'Streamlit', 'Git & CI/CD'],
     },
   ],
-  /** The eight headline tools that orbit the core */
   orbit: [
     { label: 'PyTorch', category: 'ML' },
     { label: 'GraphRAG', category: 'NLP' },
@@ -236,144 +182,97 @@ export const STACK = {
     { label: 'Neo4j', category: 'GRAPH' },
     { label: 'FAISS', category: 'VEC' },
   ],
-  footer: ['SYSTEM ARCHITECTURE & CAPABILITIES', 'COMPUTATIONAL DISCIPLINE: 100% PRODUCTION COMPLIANT'],
 };
 
 export const TIMELINE = {
-  dept: 'DEPT: AI AUTOMATION & DATA SYSTEMS',
-  heading: 'EXPERIENCE & TECHNICAL RECORD',
-  chips: ['STATUS: PRODUCTION SPECIALIST', 'GPA: 3.91 HIGHEST DISTINCTION'],
-  rolesLabel: 'PROFESSIONAL INDUSTRY ROLES',
-  rolesCount: '[ 3 PRODUCTION MILESTONES ]',
+  heading: 'THE RECORD',
+  lead: 'Production engineering across computer vision, enterprise analytics, and mobile AI.',
   experiences: [
     {
-      period: '7 SEP 2026 — PRESENT',
-      status: 'PRODUCTION ACTIVE',
+      period: 'SEP 2026 — PRESENT',
+      status: 'CURRENT ROLE',
       role: 'AI Automation Specialist',
       company: 'PT In Fashion',
       description:
-        'Architected fashion logistics and inventory neural pipelines with computer vision semantic segmentation, multi-camera OCR barcode tracking, and distributed telemetry syncing.',
-      tags: ['CV SEGMENTATION', 'OCR PIPELINE', 'NEURAL AUTOMATION', 'DOCKER'],
+        'Architecting computer vision segmentation and multi-camera OCR barcode tracking pipelines for apparel manufacturing logistics.',
+      tags: ['CV Segmentation', 'OCR Pipeline', 'Docker'],
       current: true,
     },
     {
-      period: 'APR 2026 — JUN 2026',
-      status: 'ANALYTICS & BI',
+      period: 'APR — JUN 2026',
+      status: 'ANALYTICS',
       role: 'Data Analyst',
       company: 'PT Indo Apps Solusindo',
       description:
-        'Spearheaded enterprise data modeling, automated ETL pipelines, predictive customer retention scoring, and high-frequency analytical dashboards across multi-client software ecosystems.',
-      tags: ['ETL PIPELINES', 'PREDICTIVE MODELING', 'BUSINESS TELEMETRY', 'SQL'],
+        'Built automated ETL workflows, retention scoring models, and executive analytics dashboards across multi-client software platforms.',
+      tags: ['ETL Pipelines', 'Predictive Modeling', 'SQL'],
       current: false,
     },
     {
       period: '2024',
-      status: 'GOOGLE & GOTO CONSORTIUM',
+      status: 'GOOGLE & GOTO',
       role: 'Android Developer',
       company: 'Bangkit Academy 2024',
       description:
-        'Graduated with distinction; built native Android applications integrating on-device TensorFlow Lite neural models, clean architecture with Jetpack Compose, and background task management.',
-      tags: ['KOTLIN / COMPOSE', 'TENSORFLOW LITE', 'CLEAN ARCHITECTURE'],
+        'Graduated with distinction building native Kotlin apps with on-device TensorFlow Lite neural inference and clean architecture.',
+      tags: ['Kotlin', 'TensorFlow Lite', 'Compose'],
       current: false,
     },
   ],
   education: {
-    badge: 'CLASS OF 2026 // ACCREDITED DEGREE',
-    gpa: 'GPA: 3.91 / 4.00 (SUMMA CUM LAUDE EQUIVALENT)',
+    badge: 'CLASS OF 2026',
+    gpa: '3.91 / 4.00 GPA',
     school: 'Universitas Udayana',
-    degree: 'B.Sc. Information Technology',
-    specialization: 'Specialization in Data Science',
+    degree: 'B.Sc. Information Technology · Data Science',
     description:
-      'Rigorous academic curriculum in Artificial Intelligence, Linear Algebra, Distributed Systems, Deep Learning Optimization, and Natural Language Processing. Undergraduate thesis solving factual hallucination in low-resource Indonesian summarization via IndoBERT NLI and IndoT5.',
-    chips: ['MAJOR: DATA SCIENCE', 'THESIS: NLP & NLI SUMMARIZATION', 'GPA 3.91 / 4.00'],
-    audit: 'INSTITUTION ID: #UNUD-TI-2026 // VERIFIED AUDIT',
+      'Focused on Deep Learning, Distributed Systems, and NLP. Undergraduate thesis tackles factual hallucination in Indonesian news summarization using IndoBERT NLI and IndoT5.',
+    tags: ['Data Science', 'NLP Thesis', 'Summa Cum Laude Track'],
   },
-  footer: ['VERIFIED PROFESSIONAL & ACADEMIC RECORD', 'STATUS: ACTIVE PRODUCTION SPECIALIST'],
 };
 
 export type ChannelIcon = 'github' | 'linkedin' | 'globe' | 'file';
 
 export const CONTACT = {
-  status: ['PROTOCOL: SECURE_WSS_V4', 'LATENCY: 12ms', 'NODE_STATUS: LISTENING'],
-  destinationLabel: 'TRANSMISSION DESTINATION',
-  destination: 'FOUNDER / ENG LEADERSHIP',
-  headline: "LET'S BUILD SOMETHING INTELLIGENT.",
-  lead: 'Direct connection with I Putu Andika Prasetya — AI Engineer & Automation Specialist.',
+  eyebrow: 'DIRECT LINE',
+  lead: 'Based in Gianyar, Bali (UTC+8). Open for AI Engineering, Machine Learning, and Automation roles worldwide.',
   inbox: {
-    label: 'PRIMARY COMM CHANNEL // DIRECT INBOX',
-    hint: 'CLICK TO COPY ENCRYPTED ADDRESS OR SEND DIRECT TRANSMISSION',
-    copy: 'COPY ADDRESS',
-    copied: 'COPIED!',
-    toast: 'COPIED TO SYSTEM CLIPBOARD',
+    label: 'DIRECT INBOX',
+    hint: 'Click to copy address or open your mail client',
+    copy: 'COPY',
+    copied: 'COPIED',
+    toast: 'Email copied to clipboard',
   },
   channels: [
     {
       id: '01',
-      kicker: 'CODEBASE',
-      title: 'GITHUB',
+      title: 'GitHub',
       handle: 'github.com/andikaprasetyaaa',
       href: 'https://github.com/andikaprasetyaaa',
       icon: 'github' as ChannelIcon,
-      stats: [
-        { label: 'PUBLIC REPOS', value: '42+' },
-        { label: 'COMMITS & OPS', value: '1,480+' },
-        { label: 'STATUS', value: 'ACTIVE' },
-      ],
     },
     {
       id: '02',
-      kicker: 'NETWORK',
-      title: 'LINKEDIN',
+      title: 'LinkedIn',
       handle: 'linkedin.com/in/andikaprasetya',
       href: 'https://linkedin.com/in/andikaprasetya',
       icon: 'linkedin' as ChannelIcon,
-      stats: [
-        { label: 'NETWORK METRICS', value: '500+' },
-        { label: 'FOCUS', value: 'AI & AUTOMATION' },
-        { label: 'VERIFICATION', value: 'VERIFIED' },
-      ],
     },
     {
       id: '03',
-      kicker: 'DOMAIN',
-      title: 'PORTFOLIO DOMAIN',
+      title: 'Portfolio Source',
       handle: 'andikaprasetya.dev',
       href: 'https://github.com/andikaprasetyaaa/andika-prasetya-portofolio',
       icon: 'globe' as ChannelIcon,
-      stats: [
-        { label: 'SSL TLS PROTOCOL', value: 'ENCRYPTED' },
-        { label: 'STATUS', value: 'LIVE ONLINE' },
-        { label: 'HOSTING', value: 'EDGE GLOBAL' },
-      ],
     },
     {
       id: '04',
-      kicker: 'DOSSIER',
-      title: 'CURRICULUM VITAE',
-      handle: 'CV Dossier [Google Drive]',
+      title: 'Curriculum Vitae',
+      handle: 'Download PDF via Google Drive',
       href: 'https://drive.google.com/file/d/1ds1m5DI1xfXoVL6_EQa2WoXo65RanzeZ/view?usp=sharing',
       icon: 'file' as ChannelIcon,
-      stats: [
-        { label: 'DOCUMENT FORMAT', value: 'VERIFIED PDF' },
-        { label: 'DEGREE', value: 'B.Sc. (GPA 3.91)' },
-        { label: 'VALIDATION', value: 'AUTHENTICATED' },
-      ],
     },
   ],
-  location: {
-    label: 'LOCATION TELEMETRY',
-    value: 'LOCATION: BALI / UTC+8 (REMOTE WORLDWIDE)',
-    note: 'GEO_LAT: -8.3405 / GEO_LONG: 115.0920 // TIMEZONE SYNCHRONIZATION WITH SF, NYC, LONDON & SINGAPORE',
-  },
-  readiness: {
-    label: 'DEPLOYMENT READINESS',
-    value: 'AVAILABILITY: ACCEPTING HIGH-IMPACT AI & AUTOMATION ROLES',
-    note: 'FULL-CYCLE ARCHITECTURE / AI AUTOMATION / RAG & LLM SYSTEMS',
-  },
-  heartbeat: { label: 'SYSTEM HEARTBEAT', value: '100% OPERATIONAL' },
   footer: {
-    system: 'DESIGN SYSTEM: VICE DUSK NEON',
-    systemNote: 'OPEN-WORLD HUD // TROPICAL SUNSET CORE',
-    rights: 'I PUTU ANDIKA PRASETYA. ALL RIGHTS RESERVED.',
+    rights: 'I Putu Andika Prasetya. Crafted in Gianyar, Bali.',
   },
 };

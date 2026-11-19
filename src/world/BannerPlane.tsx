@@ -27,13 +27,13 @@ function drawBanner(canvas: HTMLCanvasElement, text: string) {
   ctx.fillStyle = '#2a1038';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  let size = h * 0.62;
-  ctx.font = `${size}px Anton, Impact, "Arial Narrow", sans-serif`;
+  let size = h * 0.64;
+  ctx.font = `${size}px "Bebas Neue", Oswald, Impact, "Arial Narrow", sans-serif`;
   const max = w * 0.9;
   const measured = ctx.measureText(text).width;
   if (measured > max) {
     size *= max / measured;
-    ctx.font = `${size}px Anton, Impact, "Arial Narrow", sans-serif`;
+    ctx.font = `${size}px "Bebas Neue", Oswald, Impact, "Arial Narrow", sans-serif`;
   }
   ctx.fillText(text, w / 2, h / 2 + size * 0.04);
 }
@@ -139,7 +139,7 @@ export function BannerPlane() {
   useEffect(() => {
     let alive = true;
     document.fonts
-      ?.load('120px Anton')
+      ?.load('120px "Bebas Neue"')
       .then(() => {
         if (!alive) return;
         drawBanner(assets.canvas, assets.text);

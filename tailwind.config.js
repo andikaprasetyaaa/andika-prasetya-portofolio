@@ -24,10 +24,10 @@ export default {
           500: '#3f2666',
         },
         ink: {
-          DEFAULT: '#f7f0fb',
-          soft: '#d6c9e3',
-          mute: '#a394b8',
-          faint: '#7d6f94',
+          DEFAULT: '#fff6f2',
+          soft: '#dfd3ea',
+          mute: '#9f91b5',
+          faint: '#726589',
         },
         vice: {
           pink: '#ff5fa8',
@@ -42,11 +42,12 @@ export default {
         },
       },
       fontFamily: {
-        display: ['Anton', 'Impact', '"Arial Narrow Bold"', 'sans-serif'],
-        hud: ['"Chakra Petch"', '"Segoe UI"', 'system-ui', 'sans-serif'],
-        sans: ['Manrope', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Oswald', '"Barlow Condensed"', 'system-ui', 'sans-serif'],
+        poster: ['"Bebas Neue"', 'Oswald', 'system-ui', 'sans-serif'],
+        hud: ['"Barlow Condensed"', 'Oswald', 'system-ui', 'sans-serif'],
+        sans: ['Outfit', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        script: ['Yellowtail', 'cursive'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-        script: ['"Mr Dafoe"', '"Brush Script MT"', 'cursive'],
       },
       maxWidth: {
         shell: 'clamp(1240px, calc(1240px + (100vw - 1440px) * 0.22), 1480px)',

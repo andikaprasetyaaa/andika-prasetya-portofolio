@@ -199,54 +199,48 @@ export const StatusDot: React.FC<{ tone?: 'teal' | 'pink' | 'amber'; ping?: bool
 };
 
 /**
- * Chapter title card that opens every section: outlined number, neon script name and
- * the section caption. It sits in the seam where the world shows through.
+ * GTA VI chapter opener: neon script accent + chapter index, bold Oswald/Bebas Neue headline,
+ * and optional right-hand controls slot. Responsive across mobile, tablet, and ultrawide.
  */
-export const ChapterTitle: React.FC<{ id: SectionId; status?: string[]; children?: React.ReactNode }> = ({
-  id,
-  status,
-  children,
-}) => {
+export const ChapterTitle: React.FC<{
+  id: SectionId;
+  titleId?: string;
+  heading: React.ReactNode;
+  lead?: string;
+  right?: React.ReactNode;
+}> = ({ id, titleId, heading, lead, right }) => {
   const meta = SECTIONS.find((s) => s.id === id)!;
-  const script = meta.label.charAt(0) + meta.label.slice(1).toLowerCase();
+  const scriptWord = meta.label.charAt(0) + meta.label.slice(1).toLowerCase();
   return (
-    <Reveal as="header" className="mb-10 md:mb-14">
-      <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
-        <div className="flex items-end gap-4 sm:gap-5">
-          <span
-            aria-hidden="true"
-            className="font-display text-[4.2rem] leading-[0.8] sm:text-[5.6rem] text-transparent"
-            style={{ WebkitTextStroke: '1.5px rgba(255, 196, 150, 0.6)' }}
-          >
-            {meta.index}
-          </span>
-          <div className="pb-1">
-            <span aria-hidden="true" className="neon-script block text-[2.4rem] leading-[0.9] sm:text-[3.1rem] -rotate-3 origin-left">
-              {script}
+    <Reveal as="header" className="mb-8 sm:mb-11 lg:mb-14">
+      <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-3xl">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center gap-2 rounded-full border border-vice-pink/35 bg-vice-pink/10 px-3 py-1 font-hud text-xs font-bold uppercase tracking-[0.2em] text-vice-gold">
+              <span className="text-vice-pink">{meta.index}</span>
+              <span aria-hidden="true" className="text-white/25">/</span>
+              <span>{meta.caption}</span>
             </span>
-            <p className="hud-label mt-3 text-ink-soft">
-              [ {meta.index} // {meta.caption} ]
-            </p>
+            <span aria-hidden="true" className="vice-script text-2xl sm:text-3xl -rotate-2">
+              {scriptWord}
+            </span>
           </div>
+          <h2
+            id={titleId}
+            className="mt-3 font-poster text-[clamp(2.35rem,6vw,4.8rem)] uppercase leading-[0.94] tracking-[0.02em] text-ink gta-shadow"
+          >
+            {heading}
+          </h2>
+          {lead && <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft sm:text-base">{lead}</p>}
         </div>
-        {status && status.length > 0 && (
-          <ul className="hidden md:flex flex-wrap items-center justify-end gap-x-5 gap-y-1.5 pb-1">
-            {status.map((s, i) => (
-              <li key={s} className="hud-label flex items-center gap-2">
-                {i === 0 && <StatusDot ping />}
-                <span className={i === status.length - 1 ? 'text-ink' : ''}>{s}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+        {right && <div className="shrink-0">{right}</div>}
       </div>
-      <div className="hairline mt-6" />
-      {children}
+      <div className="hairline mt-6 sm:mt-7" />
     </Reveal>
   );
 };
 
-/** Standard section wrapper: scroll anchor, dimming backdrop and centred shell. */
+/** Standard section wrapper: scroll anchor, gentle atmospheric scrim and responsive centred shell. */
 export const SectionShell: React.FC<{
   id: SectionId;
   children: React.ReactNode;
@@ -255,22 +249,8 @@ export const SectionShell: React.FC<{
 }> = ({ id, children, className = '', labelledBy }) => (
   <section id={id} aria-labelledby={labelledBy} className={`relative w-full ${className}`}>
     <div className="section-scrim" aria-hidden="true" />
-    <div className="shell relative z-10 py-[19vh]">{children}</div>
+    <div className="shell relative z-10 py-20 sm:py-28 lg:py-[14vh]">{children}</div>
   </section>
 );
 
-/** Stage marker at the foot of each section */
-export const StageFooter: React.FC<{ id: SectionId; left: string; right: string }> = ({ id, left, right }) => {
-  const meta = SECTIONS.find((s) => s.id === id)!;
-  return (
-    <Reveal className="mt-12 md:mt-16">
-      <div className="hairline mb-4" />
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <span className="hud-label">
-          STAGE [{meta.index} / {String(SECTIONS.length).padStart(2, '0')}] // {left}
-        </span>
-        <span className="hud-label text-ink-soft">{right}</span>
-      </div>
-    </Reveal>
-  );
-};
+

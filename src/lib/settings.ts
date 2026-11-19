@@ -5,6 +5,7 @@ export type QualityPref = 'auto' | 'high' | 'low';
 
 export interface Settings {
   sound: boolean;
+  station: number;
   motion: MotionPref;
   quality: QualityPref;
 }
@@ -18,7 +19,7 @@ export interface UiState {
   booted: boolean;
 }
 
-const STORAGE_KEY = 'ap-portfolio-settings-v1';
+const STORAGE_KEY = 'ap-portfolio-settings-v2';
 
 function systemPrefersReducedMotion() {
   return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -26,7 +27,8 @@ function systemPrefersReducedMotion() {
 
 function loadSettings(): Settings {
   const base: Settings = {
-    sound: false,
+    sound: true,
+    station: 0,
     motion: systemPrefersReducedMotion() ? 'reduced' : 'full',
     quality: 'auto',
   };
@@ -35,8 +37,8 @@ function loadSettings(): Settings {
     if (!raw) return base;
     const saved = JSON.parse(raw) as Partial<Settings>;
     return {
-      // Sound is always opt-in per visit: never start a page with audio on.
-      sound: false,
+      sound: typeof saved.sound === 'boolean' ? saved.sound : true,
+      station: typeof saved.station === 'number' ? saved.station % 3 : 0,
       motion: saved.motion === 'full' || saved.motion === 'reduced' ? saved.motion : base.motion,
       quality: saved.quality === 'high' || saved.quality === 'low' || saved.quality === 'auto' ? saved.quality : 'auto',
     };
@@ -66,7 +68,7 @@ function createStore<T extends object>(initial: T) {
 }
 
 export const settingsStore = createStore<Settings>(
-  typeof window === 'undefined' ? { sound: false, motion: 'full', quality: 'auto' } : loadSettings(),
+  typeof window === 'undefined' ? { sound: true, station: 0, motion: 'full', quality: 'auto' } : loadSettings(),
 );
 
 export const uiStore = createStore<UiState>({ menuOpen: false, modalOpen: false, booted: false });
@@ -81,9 +83,12 @@ if (typeof window !== 'undefined') {
     const s = settingsStore.get();
     applyMotionAttribute(s.motion);
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ motion: s.motion, quality: s.quality }));
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ sound: s.sound, station: s.station, motion: s.motion, quality: s.quality }),
+      );
     } catch {
-      /* storage unavailable — settings just won't persist */
+      /* storage unavailable */
     }
   });
 }

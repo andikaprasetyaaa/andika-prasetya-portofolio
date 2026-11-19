@@ -3,11 +3,10 @@ import { Cpu, Database, Layers, Terminal, type LucideIcon } from 'lucide-react';
 import { STACK, type StackIcon } from '../data/content';
 import { pad2 } from '../lib/math';
 import { sound } from '../lib/sound';
-import { ChapterTitle, Reveal, SectionShell, StageFooter } from '../components/ui';
+import { ChapterTitle, Reveal, SectionShell } from '../components/ui';
 
 const ICONS: Record<StackIcon, LucideIcon> = { cpu: Cpu, layers: Layers, database: Database, terminal: Terminal };
 const ACCENTS = ['#ff5fa8', '#ffc46b', '#45e3d0', '#9d6bff'];
-/** Wedge centre angles: top, right, bottom, left */
 const ANGLES = [-90, 0, 90, 180];
 const TILT = 44;
 
@@ -24,7 +23,7 @@ function wedgePath(center: number, inner: number, outer: number, spread = 41) {
   return `M${x0},${y0} A${outer},${outer} 0 0 1 ${x1},${y1} L${x2},${y2} A${inner},${inner} 0 0 0 ${x3},${y3} Z`;
 }
 
-/** Selector wheel with the headline tools orbiting it on a tilted ring (pure CSS 3D). */
+/** GTA-inspired selector wheel with core tools orbiting on a tilted ring. */
 const Orbital: React.FC<{ active: number; onSelect: (i: number) => void }> = ({ active, onSelect }) => {
   const cat = STACK.categories[active];
   const Icon = ICONS[cat.icon];
@@ -32,18 +31,17 @@ const Orbital: React.FC<{ active: number; onSelect: (i: number) => void }> = ({ 
 
   return (
     <div
-      className="group/orbit relative mx-auto aspect-square w-[230px] sm:w-[360px] sm:[--r:186px] lg:w-full lg:max-w-[400px] lg:[--r:min(198px,15.2vw)]"
+      className="group/orbit relative mx-auto aspect-square w-[230px] sm:w-[350px] sm:[--r:182px] lg:w-full lg:max-w-[390px] lg:[--r:min(194px,15vw)]"
       style={{ perspective: '1200px' }}
     >
       <div className="absolute inset-0" style={preserve}>
-        {/* soft glow under the core */}
         <div
           aria-hidden="true"
           className="absolute inset-[14%] rounded-full blur-3xl transition-colors duration-700"
           style={{ background: `${ACCENTS[active]}30` }}
         />
 
-        {/* selector wheel */}
+        {/* Weapon-wheel selector */}
         <div className="absolute inset-[4%] sm:inset-[27%]" style={preserve}>
           <svg viewBox="0 0 200 200" className="h-full w-full overflow-visible" role="group" aria-label="Skill categories">
             <circle cx="100" cy="100" r="98.5" fill="none" stroke="#ffffff" strokeOpacity="0.1" />
@@ -54,7 +52,7 @@ const Orbital: React.FC<{ active: number; onSelect: (i: number) => void }> = ({ 
                   key={c.id}
                   d={wedgePath(ANGLES[i], 47, 95)}
                   fill={on ? ACCENTS[i] : '#1a0f2e'}
-                  fillOpacity={on ? 0.9 : 0.86}
+                  fillOpacity={on ? 0.92 : 0.86}
                   stroke={on ? ACCENTS[i] : '#ffffff'}
                   strokeOpacity={on ? 1 : 0.14}
                   strokeWidth="1"
@@ -75,10 +73,18 @@ const Orbital: React.FC<{ active: number; onSelect: (i: number) => void }> = ({ 
                 />
               );
             })}
-            <circle cx="100" cy="100" r="42" fill="#0e0819" stroke={ACCENTS[active]} strokeOpacity="0.7" strokeWidth="1.5" className="transition-[stroke] duration-500" />
+            <circle
+              cx="100"
+              cy="100"
+              r="42"
+              fill="#0e0819"
+              stroke={ACCENTS[active]}
+              strokeOpacity="0.75"
+              strokeWidth="1.5"
+              className="transition-[stroke] duration-500"
+            />
           </svg>
 
-          {/* wedge icons */}
           {STACK.categories.map((c, i) => {
             const WIcon = ICONS[c.icon];
             const [x, y] = polar(71, ANGLES[i]);
@@ -94,15 +100,14 @@ const Orbital: React.FC<{ active: number; onSelect: (i: number) => void }> = ({ 
             );
           })}
 
-          {/* hub */}
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
             <Icon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: ACCENTS[active] }} aria-hidden="true" />
             <span className="mt-1 font-display text-xl leading-none text-ink sm:text-2xl">{pad2(active + 1)}</span>
-            <span className="mt-0.5 font-hud text-[0.5rem] font-bold tracking-[0.2em] text-ink-mute sm:text-[0.56rem]">/ 04</span>
+            <span className="mt-0.5 font-hud text-[0.62rem] font-bold tracking-[0.2em] text-ink-mute">/ 04</span>
           </div>
         </div>
 
-        {/* tilted orbit */}
+        {/* Tilted orbital badges */}
         <div className="pointer-events-none absolute inset-0 hidden sm:block" style={{ ...preserve, transform: `rotateX(${TILT}deg)` }}>
           <div className="absolute left-1/2 top-1/2 h-[calc(var(--r)*2)] w-[calc(var(--r)*2)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-white/20" />
           <div className="absolute inset-0 animate-spin-slow group-hover/orbit:[animation-play-state:paused]" style={preserve}>
@@ -117,8 +122,8 @@ const Orbital: React.FC<{ active: number; onSelect: (i: number) => void }> = ({ 
                   <div style={{ ...preserve, transform: `rotateZ(${-theta}deg)` }}>
                     <div className="animate-spin-slow-rev group-hover/orbit:[animation-play-state:paused]" style={preserve}>
                       <div style={{ transform: `rotateX(${-TILT}deg)` }}>
-                        <span className="chip -translate-x-1/2 -translate-y-1/2 !border-white/15 !bg-night-850/95 !px-2.5 !py-1.5 shadow-panel">
-                          <span className="text-[0.6rem] text-vice-pink">{node.category}</span>
+                        <span className="chip -translate-x-1/2 -translate-y-1/2 !border-white/15 !bg-night-850/95 !px-3 !py-1.5 shadow-panel">
+                          <span className="text-[0.65rem] text-vice-coral">{node.category}</span>
                           <span className="text-ink">{node.label}</span>
                         </span>
                       </div>
@@ -139,78 +144,84 @@ export const Stack: React.FC = () => {
 
   return (
     <SectionShell id="stack" labelledBy="stack-title" className="overflow-hidden">
-      <ChapterTitle id="stack" status={STACK.status} />
+      <ChapterTitle
+        id="stack"
+        titleId="stack-title"
+        heading={
+          <>
+            THE <span className="text-sunset">ARSENAL</span>
+          </>
+        }
+        lead={STACK.lead}
+      />
 
-      <Reveal className="mb-10 flex flex-col gap-5 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
-        <h2
-          id="stack-title"
-          className="max-w-3xl font-display text-[clamp(2.2rem,5vw,4.1rem)] uppercase leading-[0.98] tracking-[0.005em] text-ink"
-        >
-          {STACK.heading}
-        </h2>
-        <p className="max-w-md text-[0.98rem] leading-relaxed text-ink-soft lg:text-right">{STACK.lead}</p>
-      </Reveal>
-
-      <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-8">
-        <Reveal className="lg:col-span-5" y={0} x={-24}>
+      <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-10">
+        <Reveal className="lg:col-span-5" y={0} x={-20}>
           <Orbital active={active} onSelect={setActive} />
           <ul className="mt-7 flex flex-wrap justify-center gap-2 sm:hidden">
             {STACK.orbit.map((node) => (
               <li key={node.label} className="chip !bg-night-850/90">
-                <span className="text-[0.6rem] text-vice-pink">{node.category}</span>
+                <span className="text-[0.65rem] text-vice-coral">{node.category}</span>
                 <span className="text-ink">{node.label}</span>
               </li>
             ))}
           </ul>
-          <p className="hud-label mt-6 text-center">{STACK.orbitLabel}</p>
+          <p className="hud-label mt-5 text-center">{STACK.orbitHint}</p>
         </Reveal>
 
+        {/* Clean 2x2 GTA loadout grid without dotted spreadsheet noise */}
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-7">
           {STACK.categories.map((cat, i) => {
             const Icon = ICONS[cat.icon];
             const on = i === active;
             const accent = ACCENTS[i];
             return (
-              <Reveal as="li" key={cat.id} delay={0.07 * i}>
-                <div
+              <Reveal as="li" key={cat.id} delay={0.06 * i}>
+                <button
+                  type="button"
                   onMouseEnter={() => setActive(i)}
-                  className="panel h-full p-5 transition-[border-color,transform,box-shadow] duration-500 ease-out-expo"
+                  onClick={() => {
+                    sound.click();
+                    setActive(i);
+                  }}
+                  aria-pressed={on}
+                  className="panel flex h-full w-full flex-col justify-between p-6 text-left transition-[border-color,transform,box-shadow] duration-500 ease-out-expo"
                   style={{
-                    borderColor: on ? `${accent}8c` : undefined,
-                    transform: on ? 'translateY(-4px)' : undefined,
-                    boxShadow: on ? `0 24px 60px -30px ${accent}99` : undefined,
+                    borderColor: on ? `${accent}88` : undefined,
+                    transform: on ? 'translateY(-3px)' : undefined,
+                    boxShadow: on ? `0 22px 54px -26px ${accent}80` : undefined,
                   }}
                 >
-                  <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] pb-3.5">
-                    <div className="flex min-w-0 items-center gap-3">
+                  <div>
+                    <div className="flex items-center justify-between gap-3">
                       <span
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors duration-500"
-                        style={{ background: on ? accent : `${accent}22`, color: on ? '#14081f' : accent }}
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors duration-300"
+                        style={{ background: on ? accent : `${accent}20`, color: on ? '#14081f' : accent }}
                       >
                         <Icon className="h-4 w-4" aria-hidden="true" />
                       </span>
-                      <h3 className="font-hud text-[0.86rem] font-bold uppercase leading-tight tracking-[0.12em] text-ink">{cat.title}</h3>
+                      <span className="font-hud text-xs font-bold tracking-[0.18em] text-ink-mute">{cat.id}</span>
                     </div>
-                    <span className="hud-label shrink-0 !text-[0.64rem]">{cat.id}</span>
+
+                    <h3 className="mt-4 font-display text-xl font-bold uppercase leading-tight tracking-[0.02em] text-ink sm:text-2xl">
+                      {cat.title}
+                    </h3>
+                    <p className="mt-2 text-xs leading-relaxed text-ink-soft sm:text-sm">{cat.summary}</p>
                   </div>
-                  <ul className="mt-3 flex flex-col">
-                    {cat.skills.map((skill, k) => (
-                      <li key={skill.name} className="flex items-baseline gap-3 border-b border-white/[0.05] py-2.5 last:border-b-0">
-                        <span className="font-mono text-[0.7rem] text-ink-faint">{pad2(k + 1)}</span>
-                        <span className="font-hud text-[0.96rem] font-semibold text-ink">{skill.name}</span>
-                        <span aria-hidden="true" className="mb-1 flex-1 border-b border-dotted border-white/15" />
-                        <span className="hud-label !text-[0.66rem] !tracking-[0.14em]">{skill.role}</span>
+
+                  <ul className="mt-5 flex flex-wrap gap-1.5 border-t border-white/[0.08] pt-4">
+                    {cat.skills.map((skill) => (
+                      <li key={skill} className="chip !px-2.5 !py-1 !text-[0.72rem]">
+                        {skill}
                       </li>
                     ))}
                   </ul>
-                </div>
+                </button>
               </Reveal>
             );
           })}
         </ul>
       </div>
-
-      <StageFooter id="stack" left={STACK.footer[0]} right={STACK.footer[1]} />
     </SectionShell>
   );
 };
